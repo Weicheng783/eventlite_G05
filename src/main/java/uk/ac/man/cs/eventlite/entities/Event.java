@@ -3,12 +3,22 @@ package uk.ac.man.cs.eventlite.entities;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+@Entity
+@Table(name = "events")
 public class Event {
 
+	@Id
+	@GeneratedValue
 	private long id;
 
 	@JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -19,8 +29,10 @@ public class Event {
 	@DateTimeFormat(pattern = "HH:mm")
 	private LocalTime time;
 
+	@NotEmpty(message = "Name of the event should not be empty")
 	private String name;
 
+	@NotEmpty(message = "Name of the venue should not be empty")
 	private long venue;
 
 	public Event() {

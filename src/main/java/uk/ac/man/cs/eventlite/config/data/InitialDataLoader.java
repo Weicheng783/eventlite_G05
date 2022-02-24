@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
+import uk.ac.man.cs.eventlite.entities.Event;
 
 @Configuration
 @Profile("default")
@@ -36,6 +37,16 @@ public class InitialDataLoader {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.
+				Event event1 = new Event();
+				event1.setName("Concert1");
+				event1.setVenue(1);
+				eventService.save(event1);
+				
+				Event event2 = new Event();
+				event2.setName("Concert2");
+				event2.setVenue(2);
+				eventService.save(event2);
+				
 			}
 		};
 	}
