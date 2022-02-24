@@ -1,9 +1,18 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
+
+@Entity
 public class Venue {
 
+	@Id
+	@GeneratedValue
 	private long id;
 
+	@NotEmpty(message = "Name of venue should not be empty")
 	private String name;
 
 	private int capacity;
