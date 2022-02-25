@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.man.cs.eventlite.entities.Venue;
-import uk.ac.man.cs.eventlite.entities.VenueRepository;
+import uk.ac.man.cs.eventlite.dao.VenueRepository;
 
 @Service
 @Transactional
