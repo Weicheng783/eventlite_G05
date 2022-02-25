@@ -31,6 +31,11 @@ public class EventsController {
 		return "events/not_found";
 	}
 
+	@GetMapping("/{id}")
+	public String getEvent(@PathVariable("id") long id, Model model) {
+		throw new EventNotFoundException(id);
+	}
+
 	@GetMapping
 	public String getAllEvents(Model model) {
 
