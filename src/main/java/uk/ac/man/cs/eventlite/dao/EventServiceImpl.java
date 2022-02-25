@@ -7,7 +7,7 @@ import uk.ac.man.cs.eventlite.entities.Event;
 
 @Service
 public class EventServiceImpl implements EventService {
-	
+
 	@Autowired
 	private EventRepository eventRepository;
 
@@ -18,9 +18,9 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public Iterable<Event> findAll() {
-		return eventRepository.findAll();
+		return eventRepository.findAllByOrderByDateAscTimeAsc();
 	}
-	
+
 	@Override
 	public Event save(Event event) {
 		return eventRepository.save(event);
