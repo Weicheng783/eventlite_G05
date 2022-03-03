@@ -9,6 +9,13 @@
   <div layout:fragment="content">
     <h1>All events</h1>
 
+	<div class="input-group pb-4">
+	  <div class="form-outline">
+	    <input type="search" id="search-bar" class="form-control" onkeyup="searchEvent()" />
+	  </div>
+	  <button type="button" class="btn btn-primary">Search</button>
+	</div>
+
     <table class="table table-striped table-hover">
       <thead>
         <tr>
@@ -20,15 +27,13 @@
       </thead>
       <tbody>
         <tr th:each="e : ${events}">
-          <td th:text="${e.name}">My Event</td>
+          <td id="event-name" th:text="${e.name}">My Event</td>
           <td th:text="${e.venue.name}">Event venue</td>
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
         </tr>
       </tbody>
     </table>
-
   </div>
-
 </body>
 </html>
