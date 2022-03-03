@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
@@ -43,5 +45,14 @@ public class EventsController {
 
 		return "events/index";
 	}
+	
+	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)
+	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
+		eventService.findById(id).orElseThrow(() -> new EventNotFoundException(id));
+		eventService.deleteById(id);
+		redirectAttrs.addFlashAttribute("ok_message", "Selected event deleted!");
+		return "redirect:/events";
+	}
+
 
 }

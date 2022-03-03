@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
@@ -43,6 +44,14 @@ public class EventsControllerApi {
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
 		throw new EventNotFoundException(id);
 	}
+	
+	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
+	public ResponseEntity<?> deleteEvent(@PathVariable("id") long id){
+		eventService.findById(id).orElseThrow();
+		eventService.deleteById(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
+	
 
 	@GetMapping
 	public CollectionModel<EntityModel<Event>> getAllEvents() {
