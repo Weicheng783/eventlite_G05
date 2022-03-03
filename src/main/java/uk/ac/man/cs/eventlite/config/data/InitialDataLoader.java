@@ -47,19 +47,14 @@ public class InitialDataLoader {
 				log.info("Database already populated with events. Skipping event initialization.");
 			} else {
 				// Build and save initial events here.
-				Venue testVenue = new Venue();
-				testVenue.setName("Manchester Academy");
-				testVenue.setCapacity(1000);
-				venueService.save(testVenue);
-
 				Event event1 = new Event();
 				event1.setName("Concert1");
-				event1.setVenue(testVenue);
+				event1.setVenue(1);
 				eventService.save(event1);
 				
 				Event event2 = new Event();
 				event2.setName("Concert2");
-				event2.setVenue(testVenue);
+				event2.setVenue(2);
 				eventService.save(event2);
 				
 			}

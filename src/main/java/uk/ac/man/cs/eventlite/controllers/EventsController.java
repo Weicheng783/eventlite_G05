@@ -22,6 +22,8 @@ public class EventsController {
 	@Autowired
 	private EventService eventService;
 
+	@Autowired
+	private VenueService venueService;
 
 	@ExceptionHandler(EventNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -40,6 +42,7 @@ public class EventsController {
 	public String getAllEvents(Model model) {
 
 		model.addAttribute("events", eventService.findAll());
+		model.addAttribute("venues", venueService.findAll());
 
 		return "events/index";
 	}
