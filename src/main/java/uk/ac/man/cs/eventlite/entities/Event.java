@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
@@ -33,8 +32,8 @@ public class Event {
 	@NotEmpty(message = "Name of the event should not be empty")
 	private String name;
 
-	@ManyToOne
-	private Venue venue;
+	@NotEmpty(message = "Name of the venue should not be empty")
+	private long venue;
 
 	public Event() {
 	}
@@ -71,11 +70,11 @@ public class Event {
 		this.name = name;
 	}
 
-	public Venue getVenue() {
+	public long getVenue() {
 		return venue;
 	}
 
-	public void setVenue(Venue venue) {
+	public void setVenue(long venue) {
 		this.venue = venue;
 	}
 }
