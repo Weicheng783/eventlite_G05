@@ -15,6 +15,11 @@ public class EventServiceImpl implements EventService {
 	public long count() {
 		return eventRepository.count();
 	}
+	
+	@Override
+	public Iterable<Event> findByNameLike(String name) {
+		return eventRepository.findByNameLike(name);
+	}
 
 	@Override
 	public Iterable<Event> findAll() {

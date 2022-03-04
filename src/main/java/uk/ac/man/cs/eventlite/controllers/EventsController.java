@@ -1,6 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
@@ -41,6 +43,14 @@ public class EventsController {
 
 		model.addAttribute("events", eventService.findAll());
 
+		return "events/index";
+	}
+	
+	@RequestMapping(value="/{name}", method=RequestMethod.GET)
+	public String searchEvent(@Param("name") String name, Model model) {
+		model.addAttribute("searchedEvent", eventService.findByNameLike(name));
+		model.addAttribute("name", name);
+		
 		return "events/index";
 	}
 

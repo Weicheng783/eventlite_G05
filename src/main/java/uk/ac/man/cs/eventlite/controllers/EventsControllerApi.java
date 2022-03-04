@@ -43,6 +43,7 @@ public class EventsControllerApi {
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
 		throw new EventNotFoundException(id);
 	}
+	
 
 	@GetMapping
 	public CollectionModel<EntityModel<Event>> getAllEvents() {

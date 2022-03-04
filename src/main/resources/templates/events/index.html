@@ -8,13 +8,15 @@
 <body>
   <div layout:fragment="content">
     <h1>All events</h1>
-
-	<div class="input-group pb-4">
-	  <div class="form-outline">
-	    <input type="search" id="search-bar" class="form-control" onkeyup="searchEvent()" />
-	  </div>
-	  <button type="button" class="btn btn-primary">Search</button>
-	</div>
+	
+	<form action="/events/${name}" method="get">
+		<div class="input-group pb-4">
+		  <div class="form-outline">
+		    <input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control" />
+		  </div>
+		  <button type="button" class="btn btn-primary">Search</button>
+		</div>
+	</form>
 
     <table class="table table-striped table-hover">
       <thead>
