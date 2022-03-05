@@ -28,19 +28,18 @@ public class Security extends WebSecurityConfigurerAdapter {
 	private static final RequestMatcher[] NO_AUTH = { new AntPathRequestMatcher("/webjars/**", "GET"),
 			new AntPathRequestMatcher("/**", "GET"), new AntPathRequestMatcher("/h2-console/**") };
 	
-//	private static final RequestMatcher[] ORGANISER_AUTH = {
-////			new AntPathRequestMatcher("/**", "DELETE"),
-////			new AntPathRequestMatcher("/events/add", "GET"),
-////			new AntPathRequestMatcher("/events/add", "POST"),
-//			new AntPathRequestMatcher("/events/update/**", "POST"),
-//			new AntPathRequestMatcher("/events/update/**", "GET")};
+	private static final RequestMatcher[] ORGANISER_AUTH = { 
+			new AntPathRequestMatcher("/events/update/**", "POST"),
+			new AntPathRequestMatcher("/events/update/**", "GET")};
+
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// By default, all requests are authenticated except our specific list.
+		http.authorizeRequests().requestMatchers(ORGANISER_AUTH).hasRole(ORGANISER_ROLE);
 		http.authorizeRequests().requestMatchers(NO_AUTH).permitAll().anyRequest().hasRole(ADMIN_ROLE);
-//		http.authorizeRequests().requestMatchers(ORGANISER_AUTH).permitAll().anyRequest().hasRole(ORGANISER_ROLE);
 
+	
 		// Use form login/logout for the Web.
 		http.formLogin().loginPage("/sign-in").permitAll();
 		http.logout().logoutUrl("/sign-out").logoutSuccessUrl("/").permitAll();
