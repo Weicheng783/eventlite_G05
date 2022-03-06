@@ -45,7 +45,7 @@ public class EventsController {
 
 		return "events/index";
 	}
-	
+
 	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)
 	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
 		eventService.findById(id).orElseThrow(() -> new EventNotFoundException(id));
