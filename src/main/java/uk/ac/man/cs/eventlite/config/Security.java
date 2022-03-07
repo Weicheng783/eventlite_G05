@@ -19,6 +19,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class Security extends WebSecurityConfigurerAdapter {
 
 	public static final String ADMIN_ROLE = "ADMINISTRATOR";
+	public static final String ATTENDEE_ROLE = "ATTENDEE";
 
 	// List the mappings/methods for which no authorisation is required.
 	// By default we allow all GETs and full access to the H2 console.
@@ -56,7 +57,8 @@ public class Security extends WebSecurityConfigurerAdapter {
 		UserDetails mustafa = User.withUsername("Mustafa").password(encoder.encode("Mustafa")).roles(ADMIN_ROLE)
 				.build();
 		UserDetails tom = User.withUsername("Tom").password(encoder.encode("Carroll")).roles(ADMIN_ROLE).build();
+		UserDetails ben = User.withUsername("Ben").password(encoder.encode("Ben")).roles(ATTENDEE_ROLE).build();
 
-		return new InMemoryUserDetailsManager(rob, caroline, markel, mustafa, tom);
+		return new InMemoryUserDetailsManager(rob, caroline, markel, mustafa, tom, ben);
 	}
 }

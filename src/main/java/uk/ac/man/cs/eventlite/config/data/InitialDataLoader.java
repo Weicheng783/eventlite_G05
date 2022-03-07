@@ -53,15 +53,19 @@ public class InitialDataLoader {
 				venueService.save(testVenue);
 
 				Event event1 = new Event();
-				event1.setName("Concert1");
+				event1.setName("Reading group");
 				event1.setVenue(testVenue);
 				eventService.save(event1);
 				
 				Event event2 = new Event();
-				event2.setName("Concert2");
+				event2.setName("Music Concert");
 				event2.setVenue(testVenue);
 				eventService.save(event2);
-				
+
+				Event event3 = new Event();
+				event3.setName("Careers fair");
+				event3.setVenue(testVenue);
+				eventService.save(event3);
 			}
 		};
 	}

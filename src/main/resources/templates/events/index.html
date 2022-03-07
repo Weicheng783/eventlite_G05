@@ -8,7 +8,7 @@
 <body>
   <div layout:fragment="content">
     <h1>All events</h1>
-	
+
 	<form action="/events/${name}" method="get">
 		<div class="input-group pb-4">
 		  <div class="form-outline">
@@ -29,13 +29,18 @@
       </thead>
       <tbody>
         <tr th:each="e : ${events}">
-          <td id="event-name" th:text="${e.name}">My Event</td>
+          <td th:text="${e.name}">My Event</td>
           <td th:text="${e.venue.name}">Event venue</td>
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
         </tr>
       </tbody>
     </table>
+    <p>
+      <a class="btn btn-primary" role="button" href="/events/new"><i class="fas fa-plus" aria-hidden="true"></i> Add a new event</a>
+    </p>
+
   </div>
+
 </body>
 </html>

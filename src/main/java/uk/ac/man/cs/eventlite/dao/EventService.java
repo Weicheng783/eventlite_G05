@@ -8,6 +8,8 @@ public interface EventService {
 	
 	public Iterable<Event> findByNameLike(String name);
 
+	public Iterable<Event> findByNameContaining(String name);
+
 	public Iterable<Event> findAll();
 
 	public Event save(Event event);
