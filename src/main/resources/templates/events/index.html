@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/default}">
+      layout:decorate="~{layouts/default}" lang="en">
 <head>
   <title>All events</title>
 </head>
@@ -9,12 +9,12 @@
   <div layout:fragment="content">
     <h1>All events</h1>
 
-	<form action="/events/${name}" method="get">
+	<form action="/events/search" method="get">
 		<div class="input-group pb-4">
 		  <div class="form-outline">
-		    <input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control" />
+              <label for="name">Search by Name</label><input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control" />
 		  </div>
-		  <button type="button" class="btn btn-primary">Search</button>
+		  <button type="submit" class="btn btn-primary" style="margin-top: auto">Search</button>
 		</div>
 	</form>
 

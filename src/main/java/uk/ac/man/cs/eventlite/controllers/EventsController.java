@@ -8,14 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import uk.ac.man.cs.eventlite.dao.EventService;
@@ -51,6 +44,12 @@ public class EventsController {
 
 		model.addAttribute("events", eventService.findAll());
 
+		return "events/index";
+	}
+
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
+	public String searchEventByNameContaining(@RequestParam("name") String name, Model model) {
+		model.addAttribute("events", eventService.findByNameContaining(name));
 		return "events/index";
 	}
 
