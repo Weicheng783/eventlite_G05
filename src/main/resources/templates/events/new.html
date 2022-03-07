@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" 
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+  <title>Create a New Event</title>
+</head>
+<body>
+  <div layout:fragment="content">
+    <h1>Add a new event</h1>
+    
+    <form action="#" th:action="@{/events}" th:object="${event}" method="post">
+      <div class="form-group" th:classappend="${#fields.hasErrors('name')}? has-error">
+        <label for="name">Event Name</label>
+        <input class="form-control" type="text" name="name" id="name" autofocus="autofocus" />
+        <p class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">errors</p>
+      </div>
+      <div class="form-group" th:classappend="${#fields.hasErrors('date')}? has-error">
+        <label for="date">Date</label>
+        <input class="form-control" type="date" name="date" id="date"/>
+       	<p class="text-danger" th:if="${#fields.hasErrors('date')}" th:errors="*{date}">errors</p>
+      </div>
+      <div class="form-group" th:classappend="${#fields.hasErrors('time')}? has-error">
+        <label for="time">Time</label>
+        <input class="form-control" type="time" name="time" id="time"/>
+        <p class="text-danger" th:if="${#fields.hasErrors('time')}" th:errors="*{time}">errors</p>
+      </div>
+      <div class="form-group" th:classappend="${#fields.hasErrors('venue')}? has-error">
+        <label for="venue">Venue</label>
+        <select class="form-control" name="venue" th:field="*{venue.id}">
+			<option th:each="v : ${venues}" th:text="${v.name}" th:value="${v.id}"/>
+		</select>
+       </div>
+	  <button class="btn btn-primary" type="submit"><i class="fas fa-bookmark" aria-hidden="true"></i> Save</button>
+      <a class="btn btn-warning" role="button" href="/index"><i class="fas fa-ban" aria-hidden="true"></i> Cancel</a>
+    </form>
+    
+  </div>
+</body>
+</html>
