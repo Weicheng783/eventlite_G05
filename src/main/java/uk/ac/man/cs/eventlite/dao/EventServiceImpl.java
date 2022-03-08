@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +36,10 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public Event save(Event event) {
 		return eventRepository.save(event);
+	}
+
+	@Override
+	public Optional<Event> findEventById(Long id) {
+		return eventRepository.findById(id);
 	}
 }
