@@ -87,6 +87,15 @@ public class EventsController {
 		return "redirect:/events";
 	}
 	
+	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)
+	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
+		eventService.findById(id).orElseThrow(() -> new EventNotFoundException(id));
+		eventService.deleteById(id);
+		redirectAttrs.addFlashAttribute("ok_message", "Selected event deleted!");
+		return "redirect:/events";
+	}
+
+	
 
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
