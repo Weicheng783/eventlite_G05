@@ -33,12 +33,21 @@
           <td th:text="${e.venue.name}">Event venue</td>
           <td th:text="${{e.date}}">Event date</td>
           <td th:text="${{e.time}}">Event time</td>
+<<<<<<< HEAD
           <div sec:authorize="hasRole('ORGANISER')">
             <td>
             <a class="btn btn-primary" role="button" th:method="get" th:href="@{/events/update/{num}(num=${e.id})}">Update</a >
          	</td>
          	</div>
+=======
+          <td>
+            <form th:action="@{/events/{id}(id=${e.id})}" th:method="delete">
+      		  <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete</button>
+    		</form>
+         </td>
+>>>>>>> refs/remotes/origin/event_delete
         </tr>
+
       </tbody>
     </table>
     <p>

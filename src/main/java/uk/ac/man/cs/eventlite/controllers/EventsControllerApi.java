@@ -8,8 +8,17 @@ import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -38,10 +47,18 @@ public class EventsControllerApi {
                 .body(String.format(NOT_FOUND_MSG, ex.getMessage(), ex.getId()));
     }
 
-    @GetMapping("/{id}")
-    public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-        throw new EventNotFoundException(id);
-    }
+
+	@GetMapping("/{id}")
+	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
+		throw new EventNotFoundException(id);
+	}
+	
+	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
+	public ResponseEntity<?> deleteEvent(@PathVariable("id") long id){
+		eventService.findById(id).orElseThrow();
+		eventService.deleteById(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 
 
     @GetMapping

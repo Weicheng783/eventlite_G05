@@ -42,4 +42,35 @@ public class EventServiceImpl implements EventService {
 	public Optional<Event> findEventById(Long id) {
 		return eventRepository.findById(id);
 	}
+	
+	@Override
+	public void delete(Event event) {
+		eventRepository.delete(event);
+	}
+
+	@Override
+	public void deleteAll() {
+		eventRepository.deleteAll();
+	}
+
+	@Override
+	public void deleteAll(Iterable<Event> event) {
+		eventRepository.deleteAll(event);
+	}
+
+	@Override
+	public void deleteById(long id) {
+		eventRepository.deleteById(id);
+	}
+	
+	@Override
+	public void deleteAllById(Iterable<Long> ids) {
+		eventRepository.deleteAllById(ids);
+	}
+	
+	@Override
+	public Optional<Event> findById(long id) {
+		return eventRepository.findById(id);
+	}
+
 }
