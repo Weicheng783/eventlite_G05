@@ -5,8 +5,10 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,14 +46,15 @@ public class EventsController {
 	@GetMapping("/{id}")
 	public String getEvent(@PathVariable("id") long id, Model model) {
 		Optional<Event> event = eventService.findById(id);
+		HttpHeaders headers = new HttpHeaders();
 		if (event.isEmpty()) {
 			log.info("Event not found");
-			return "events/not_found";
+			throw new EventNotFoundException(id);
 		}
 
 		log.info("Event found. redirecting...");
 		model.addAttribute("event", event.get());
-	   	return "events/event_details";
+		return "events/event_details";
 	}
 
 	@GetMapping
