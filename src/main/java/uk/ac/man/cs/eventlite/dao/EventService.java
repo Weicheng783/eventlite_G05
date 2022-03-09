@@ -33,6 +33,4 @@ public interface EventService {
 
 	public void deleteAllById(Iterable<Long> ids);
 
-	public Optional<Event> findById(long id);
-
 }
