@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import uk.ac.man.cs.eventlite.entities.Event;
 
+import java.util.Optional;
+
 @Service
 public class EventServiceImpl implements EventService {
 
@@ -24,6 +26,11 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public Iterable<Event> findByNameContaining(String name) {
 		return eventRepository.findByNameIgnoreCaseContainingOrderByDateDescNameAsc(name);
+	}
+
+	@Override
+	public Optional<Event> findById(long id) {
+		return eventRepository.findById(id);
 	}
 
 	@Override

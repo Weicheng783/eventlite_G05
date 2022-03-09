@@ -2,6 +2,8 @@ package uk.ac.man.cs.eventlite.controllers;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,14 +13,19 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import uk.ac.man.cs.eventlite.config.data.InitialDataLoader;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
 public class EventsController {
+
+	private final static Logger log = LoggerFactory.getLogger(EventsController.class);
 
 	@Autowired
 	private EventService eventService;
@@ -36,7 +43,15 @@ public class EventsController {
 
 	@GetMapping("/{id}")
 	public String getEvent(@PathVariable("id") long id, Model model) {
-		throw new EventNotFoundException(id);
+		Optional<Event> event = eventService.findById(id);
+		if (event.isEmpty()) {
+			log.info("Event not found");
+			return "events/not_found";
+		}
+
+		log.info("Event found. redirecting...");
+		model.addAttribute("event", event.get());
+	   	return "events/event_details";
 	}
 
 	@GetMapping
