@@ -4,9 +4,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+
 
 import java.util.Collections;
 
@@ -26,6 +30,10 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+
+import static org.mockito.Mockito.never;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(EventsController.class)
@@ -81,4 +89,36 @@ public class EventsControllerTest {
 		mvc.perform(get("/events/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
 				.andExpect(view().name("events/not_found")).andExpect(handler().methodName("getEvent"));
 	}
+	
+	@Test
+	public void deleteEvent() throws Exception {
+		when(eventService.existsById(1)).thenReturn(true);
+
+		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
+				.andExpect(handler().methodName("deleteEvent")).andExpect(flash().attributeExists("ok_message"));
+
+		verify(eventService).deleteById(1);
+	}
+	
+	@Test
+	public void deleteAllEvents() throws Exception {
+		mvc.perform(delete("/events").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
+				.andExpect(handler().methodName("deleteAllEvents")).andExpect(flash().attributeExists("ok_message"));
+
+		verify(eventService).deleteAll();
+	}
+
+	@Test
+	public void deleteEventNotFound() throws Exception {
+		when(eventService.existsById(1)).thenReturn(false);
+
+		mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+				.with(csrf())).andExpect(status().isNotFound()).andExpect(view().name("events/not_found"))
+				.andExpect(handler().methodName("deleteEvent"));
+
+		verify(eventService, never()).deleteById(1);
+	}
+
 }

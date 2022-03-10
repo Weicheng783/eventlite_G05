@@ -74,5 +74,10 @@ public class EventServiceImpl implements EventService {
 	public void deleteAllById(Iterable<Long> ids) {
 		eventRepository.deleteAllById(ids);
 	}
+
+	@Override
+	public boolean existsById(long id) {
+		return eventRepository.existsById(id);
+	}
 	
 }

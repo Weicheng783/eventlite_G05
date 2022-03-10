@@ -8,6 +8,7 @@ import java.util.Optional;
 
 
 public interface EventService {
+	public boolean existsById(long id);
 
 	public long count();
 	
