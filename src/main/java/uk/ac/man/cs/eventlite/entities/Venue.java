@@ -1,5 +1,6 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -12,6 +13,7 @@ public class Venue {
 	@GeneratedValue
 	private long id;
 
+	@Column(unique=true)
 	@NotEmpty(message = "Name of venue should not be empty")
 	private String name;
 
