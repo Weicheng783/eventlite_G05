@@ -14,14 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import uk.ac.man.cs.eventlite.config.data.InitialDataLoader;
 import uk.ac.man.cs.eventlite.dao.EventService;
@@ -113,8 +105,12 @@ public class EventsController {
 		return "redirect:/events";
 	}
 
-	
-
+	@DeleteMapping
+	public String deleteAllEvents(RedirectAttributes redirectAttrs) {
+		eventService.deleteAll();
+		redirectAttrs.addFlashAttribute("ok_message", "All greetings deleted.");
+		return "redirect:/events";
+	}
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String searchEventByNameContaining(@RequestParam("name") String name, Model model) {

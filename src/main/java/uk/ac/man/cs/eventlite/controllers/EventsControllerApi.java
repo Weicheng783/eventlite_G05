@@ -12,13 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -60,6 +53,11 @@ public class EventsControllerApi {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
+	@DeleteMapping
+	public ResponseEntity<?> deleteAllEvents() {
+		eventService.deleteAll();
+		return ResponseEntity.noContent().build();
+	}
 
     @GetMapping
     public CollectionModel<EntityModel<Event>> getAllEvents() {
