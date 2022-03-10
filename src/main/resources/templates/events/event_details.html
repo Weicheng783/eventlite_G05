@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layouts/default}" lang="en">
 <head>
   <title>Event Details</title>
@@ -22,13 +23,13 @@
     </p>
     
     <td>
-      <form th:action="@{/events/{id}(id=${event.id})}" th:method="delete">
+      <form th:action="@{/events/{id}(id=${event.id})}" th:method="delete" sec:authorize="isAuthenticated()">
          <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete</button>
       </form>
     </td>
 
     <td>
-      <form th:action="@{/events/{id}(id=${event.id})}" th:method="delete">
+      <form th:action="@{/events/{id}(id=${event.id})}" th:method="delete" sec:authorize="isAuthenticated()">
          <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
       </form>
     </td>
