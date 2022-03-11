@@ -22,6 +22,10 @@ import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.util.Optional;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -114,7 +118,35 @@ public class EventsController {
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String searchEventByNameContaining(@RequestParam("name") String name, Model model) {
-		model.addAttribute("events", eventService.findByNameContaining(name));
+//		model.addAttribute("events", eventService.findByNameIgnoreCaseContainingOrderByDateAscNameAsc(name));
+		
+		ArrayList<Event> upcomingEvent = new ArrayList<Event>();
+		ArrayList<Event> formerEvent = new ArrayList<Event>();
+		
+		LocalDate dateNow = LocalDate.now();
+		LocalTime timeNow = LocalTime.now();
+		
+		for (Event event : eventService.findByNameIgnoreCaseContainingOrderByDateAscNameAsc(name)) {
+			if (event.getDate() == null) {
+				continue;
+			}
+			else if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
+				upcomingEvent.add(event);
+			}
+		}
+		
+		for (Event event : eventService.findByNameIgnoreCaseContainingOrderByDateDescNameAsc(name)) {
+			if (event.getDate() == null) {
+				continue;
+			}
+			else if (dateNow.isAfter(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isAfter(event.getTime()))) {
+				formerEvent.add(event);
+			}
+		}
+
+		model.addAttribute("upcomingEvent", upcomingEvent);
+		model.addAttribute("formerEvent", formerEvent);
+		
 		return "events/index";
 	}
 
