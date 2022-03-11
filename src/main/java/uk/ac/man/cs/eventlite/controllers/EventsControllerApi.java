@@ -48,6 +48,10 @@ public class EventsControllerApi {
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
 	public ResponseEntity<?> deleteEvent(@PathVariable("id") long id){
+		if (!eventService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+
 		eventService.findById(id).orElseThrow();
 		eventService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

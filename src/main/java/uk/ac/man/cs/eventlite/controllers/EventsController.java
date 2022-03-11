@@ -64,7 +64,7 @@ public class EventsController {
 
 		return "events/index";
 	}
-	
+
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
 	public String getEventToUpdate(Model model, @PathVariable Long id) {
 		Event event = eventService.findEventById(id).get();
@@ -74,7 +74,7 @@ public class EventsController {
 		
 		return "events/update";
 	}
-	
+
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
 	public String updateEvent(@RequestBody @Valid @ModelAttribute ("event") Event event,
 			BindingResult errors,@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
@@ -84,7 +84,7 @@ public class EventsController {
 			model.addAttribute("venues", venueService.findAll());
 			return "events/update";
 		}
-		
+
 		Event eventUpdated = eventService.findEventById(id).get();
 		eventUpdated.setName(event.getName());
 		eventUpdated.setDate(event.getDate());
@@ -96,9 +96,13 @@ public class EventsController {
 		
 		return "redirect:/events";
 	}
-	
+
 	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)
 	public String deleteEvent(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
+		if (!eventService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+
 		eventService.findById(id).orElseThrow(() -> new EventNotFoundException(id));
 		eventService.deleteById(id);
 		redirectAttrs.addFlashAttribute("ok_message", "Selected event deleted!");
