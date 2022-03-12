@@ -17,6 +17,10 @@ public interface EventService {
 	public Iterable<Event> findByNameContaining(String name);
 
 	public Iterable<Event> findAll();
+	
+	public Iterable<Event> findAllByOrderByDateAscNameAsc();
+	
+	public Iterable<Event> findAllByOrderByDateDescNameAsc();
 
 	public Optional<Event> findById(long id);
 

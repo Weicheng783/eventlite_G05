@@ -22,6 +22,8 @@ import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.util.Optional;
+import java.util.ArrayList;
+import java.time.*;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -60,7 +62,29 @@ public class EventsController {
 	@GetMapping
 	public String getAllEvents(Model model) {
 
-		model.addAttribute("events", eventService.findAll());
+		
+//		Initializing two ArrayLists with the varuables in the future and past
+		ArrayList<Event> eventPast = new ArrayList<Event>();
+		ArrayList<Event> eventFuture = new ArrayList<Event>();
+		
+		
+//		Getting all the events and looping through them
+//		If the event has no date we ignore it
+//		If the event has a date in the future, we add it to our future list
+//		If the event has a date in the past, we add it to our past list
+		for (Event event : eventService.findAllByOrderByDateAscNameAsc()) {
+			if (event.getDate() == null) continue;
+			else if (event.getDate().compareTo(LocalDate.now()) < 0) eventPast.add(event);
+		}
+		
+		for (Event event : eventService.findAllByOrderByDateDescNameAsc()) {
+			if (event.getDate() == null) continue;
+			else if (event.getDate().compareTo(LocalDate.now()) >=0) eventFuture.add(event); 
+		}
+		
+//		We add the model attributes so we can pass them to the index page
+		model.addAttribute("eventFuture", eventFuture);
+		model.addAttribute("eventPast", eventPast);
 
 		return "events/index";
 	}
