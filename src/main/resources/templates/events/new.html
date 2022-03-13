@@ -25,6 +25,11 @@
         <input class="form-control" type="time" name="time" id="time"/>
         <p class="text-danger" th:if="${#fields.hasErrors('time')}" th:errors="*{time}">errors</p>
       </div>
+      <div class="form-group" th:classappend="${#fields.hasErrors('description')}? has-error">
+		  <label for="description">Description: </label>
+		  <input id="description" class="form-control" type="text" name="description">
+		  <p class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">errors</p>
+		</div>
       <div class="form-group" th:classappend="${#fields.hasErrors('venue')}? has-error">
         <label for="venue">Venue</label>
         <select class="form-control" name="venue" th:field="*{venue.id}">

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 
 public interface EventService {
+	public boolean existsById(long id);
 
 	public long count();
 	
@@ -18,6 +19,10 @@ public interface EventService {
 	public Iterable<Event> findByNameIgnoreCaseContainingOrderByDateDescNameAsc(String name);
 
 	public Iterable<Event> findAll();
+	
+	public Iterable<Event> findAllByOrderByDateAscNameAsc();
+	
+	public Iterable<Event> findAllByOrderByDateDescNameAsc();
 
 	public Optional<Event> findById(long id);
 

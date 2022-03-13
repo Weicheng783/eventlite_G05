@@ -44,6 +44,16 @@ public class EventServiceImpl implements EventService {
 	public Iterable<Event> findAll() {
 		return eventRepository.findAllByOrderByDateAscTimeAsc();
 	}
+	
+	@Override
+	public Iterable<Event> findAllByOrderByDateAscNameAsc() {
+		return eventRepository.findAllByOrderByDateAscNameAsc();
+	}
+	
+	@Override
+	public Iterable<Event> findAllByOrderByDateDescNameAsc() {
+		return eventRepository.findAllByOrderByDateDescNameAsc();
+	}
 
 	@Override
 	public Event save(Event event) {
@@ -78,6 +88,11 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public void deleteAllById(Iterable<Long> ids) {
 		eventRepository.deleteAllById(ids);
+	}
+
+	@Override
+	public boolean existsById(long id) {
+		return eventRepository.existsById(id);
 	}
 	
 }

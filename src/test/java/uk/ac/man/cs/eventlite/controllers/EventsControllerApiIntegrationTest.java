@@ -3,6 +3,8 @@ package uk.ac.man.cs.eventlite.controllers;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.StringContains.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,4 +50,83 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 				.expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$.error")
 				.value(containsString("event 99")).jsonPath("$.id").isEqualTo(99);
 	}
+	
+	@Test
+	public void deleteEventNoUser() {
+		int currentRows = countRowsInTable("events");
+
+		client.delete().uri("/api/events/1").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isUnauthorized();
+
+		// Check nothing is removed from the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+
+	@Test
+	public void deleteEventBadUser() {
+		int currentRows = countRowsInTable("events");
+
+		client.mutate().filter(basicAuthentication("Bad", "Person")).build().delete().uri("/api/events/1")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isUnauthorized();
+
+		// Check nothing is removed from the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+
+	@Test
+	@DirtiesContext
+	public void deleteEventWithUser() {
+		int currentRows = countRowsInTable("events");
+
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().delete().uri("/api/events/1")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNoContent().expectBody().isEmpty();
+
+		// Check that one row is removed from the database.
+		assertThat(currentRows - 1, equalTo(countRowsInTable("events")));
+	}
+
+	@Test
+	public void deleteEventNotFound() {
+		int currentRows = countRowsInTable("events");
+
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().delete().uri("/api/events/99")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNotFound().expectBody()
+				.jsonPath("$.error").value(containsString("event 99")).jsonPath("$.id").isEqualTo("99");
+
+		// Check nothing is removed from the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+
+	@Test
+	public void deleteAllEventsNoUser() {
+		int currentRows = countRowsInTable("events");
+
+		client.delete().uri("/api/events").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isUnauthorized();
+
+		// Check nothing is removed from the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+
+	@Test
+	public void deleteAllEventsBadUser() {
+		int currentRows = countRowsInTable("events");
+
+		client.mutate().filter(basicAuthentication("Bad", "Person")).build().delete().uri("/api/events")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isUnauthorized();
+
+		// Check nothing is removed from the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+
+	@Test
+	@DirtiesContext
+	public void deleteAllEventsWithUser() {
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().delete().uri("/api/events")
+				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNoContent().expectBody().isEmpty();
+
+		// Check that all rows are removed from the database.
+		assertThat(0, equalTo(countRowsInTable("events")));
+	}
+
 }

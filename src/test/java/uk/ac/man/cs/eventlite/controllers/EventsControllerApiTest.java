@@ -5,10 +5,15 @@ import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.anonymous;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +34,8 @@ import uk.ac.man.cs.eventlite.config.Security;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+
+import static org.mockito.Mockito.never;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(EventsControllerApi.class)
@@ -76,4 +83,38 @@ public class EventsControllerApiTest {
 				.andExpect(jsonPath("$.error", containsString("event 99"))).andExpect(jsonPath("$.id", equalTo(99)))
 				.andExpect(handler().methodName("getEvent"));
 	}
+
+	@Test
+	public void deleteEvent() throws Exception {
+//		when(eventService.existsById(1)).thenReturn(true);
+
+		mvc.perform(delete("/api/events/1").with(user("Rob").roles(Security.ADMIN_ROLE))
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andExpect(content().string(""))
+				.andExpect(handler().methodName("deleteEvent"));
+
+		verify(eventService).deleteById(1);
+	}
+	
+	@Test
+	public void deleteAllEvents() throws Exception {
+		mvc.perform(delete("/api/events").with(user("Rob").roles(Security.ADMIN_ROLE))
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andExpect(content().string(""))
+				.andExpect(handler().methodName("deleteAllEvents"));
+
+		verify(eventService).deleteAll();
+	}
+
+	@Test
+	public void deleteEventNotFound() throws Exception {
+		when(eventService.existsById(1)).thenReturn(false);
+
+		mvc.perform(delete("/api/events/1").with(user("Rob").roles(Security.ADMIN_ROLE))
+				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.error", containsString("event 1"))).andExpect(jsonPath("$.id", equalTo("1")))
+				.andExpect(handler().methodName("deleteEvent"));
+
+		verify(eventService, never()).deleteById(1);
+	}
+
+
 }

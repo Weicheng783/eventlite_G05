@@ -22,8 +22,8 @@ import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.util.Optional;
-import java.time.*;
 import java.util.ArrayList;
+import java.time.*;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
