@@ -61,8 +61,27 @@ public class EventsController {
 
 	@GetMapping
 	public String getAllEvents(Model model) {
+		ArrayList<Event> eventFuture = new ArrayList<Event>();
+		ArrayList<Event> eventPast = new ArrayList<Event>();
 
-		model.addAttribute("events", eventService.findAll());
+		LocalDate dateNow = LocalDate.now();
+		LocalTime timeNow = LocalTime.now();
+
+		for (Event event : eventService.findAllByOrderByDateAscNameAsc()) {
+			if (event.getDate() == null) {
+				continue;
+			}
+			else if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
+				eventFuture.add(event);
+			} else {
+				eventPast.add(event);
+			}
+		}
+		
+		model.addAttribute("eventFuture", eventFuture);
+		model.addAttribute("eventPast", eventPast);
+
+		// model.addAttribute("events", eventService.findAll());
 
 		return "events/index";
 	}
