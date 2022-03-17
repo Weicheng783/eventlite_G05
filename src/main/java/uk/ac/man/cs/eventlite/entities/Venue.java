@@ -17,6 +17,9 @@ public class Venue {
 	@NotEmpty(message = "Name of venue should not be empty")
 	private String name;
 
+	@NotEmpty(message = "Venue must have an address")
+	private String address;
+
 	private int capacity;
 
 	public Venue() {
@@ -44,5 +47,13 @@ public class Venue {
 
 	public void setCapacity(int capacity) {
 		this.capacity = capacity;
+	}
+
+	public String getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 }

@@ -33,7 +33,7 @@
       <div class="form-group" th:classappend="${#fields.hasErrors('venue')}? has-error">
         <label for="venue">Venue</label>
         <select class="form-control" name="venue" th:field="*{venue.id}">
-			<option th:each="v : ${venues}" th:text="${v.name}" th:value="${v.id}"/>
+			<option th:each="v : ${venues}" th:text="${v.name}" th:value="${v.id}"></option>
 		</select>
        </div>
 	  <button class="btn btn-primary" type="submit"><i class="fas fa-bookmark" aria-hidden="true"></i> Save</button>
