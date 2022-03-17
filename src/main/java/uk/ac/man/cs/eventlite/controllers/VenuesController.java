@@ -79,5 +79,26 @@ public class VenuesController {
 		return "venues/index";
 	}
 		
-	
+	@GetMapping("/new")
+	public String newVenue(Model model) {
+		if (!model.containsAttribute("venue")) {
+			model.addAttribute("venue", new Venue());
+		}
+		return "venues/new";
+	}
+
+	@PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public String createVenue(@RequestBody @Valid @ModelAttribute Venue venue, BindingResult errors,
+			Model model, RedirectAttributes redirectAttrs) {
+
+		if (errors.hasErrors()) {
+			model.addAttribute("venue", venue);
+			return "events/new";
+		}
+
+		venueService.save(venue);
+		redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
+
+		return "redirect:/venues";
+	}
 }
