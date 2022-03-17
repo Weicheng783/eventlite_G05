@@ -71,7 +71,7 @@ public class EventsController {
 			if (event.getDate() == null) {
 				continue;
 			}
-			else if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
+			if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
 				eventFuture.add(event);
 			} else {
 				eventPast.add(event);
