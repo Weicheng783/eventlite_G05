@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.dao;
 
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -33,6 +35,11 @@ public class VenueServiceImpl implements VenueService {
 	@Override
 	public Venue save(Venue venue) {
 		return venueRepository.save(venue);
+	}
+	
+	@Override
+	public Optional<Venue> findById(long id) {
+		return venueRepository.findById(id);
 	}
 
 }
