@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 
 @Service
@@ -30,6 +31,11 @@ public class VenueServiceImpl implements VenueService {
 	@Override
 	public Iterable<Venue> findAll() {
 		return venueRepository.findAll();
+	}
+	
+	@Override
+	public Iterable<Venue> findByNameIgnoreCaseContainingOrderByNameAsc(String name) {
+		return venueRepository.findByNameIgnoreCaseContainingOrderByNameAsc(name);
 	}
 
 	@Override
