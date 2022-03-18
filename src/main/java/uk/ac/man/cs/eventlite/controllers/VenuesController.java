@@ -101,4 +101,34 @@ public class VenuesController {
 
 		return "redirect:/venues";
 	}
+	
+	@RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
+	public String getVenueToUpdate(Model model, @PathVariable Long id) {
+		Venue venue = venueService.findById(id).get();
+
+		model.addAttribute("venue", venue);
+		
+		return "venues/update";
+	}
+	
+	@RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
+	public String updateVenue(@RequestBody @Valid @ModelAttribute ("venue") Venue venue,
+			BindingResult errors,@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
+		
+		if (errors.hasErrors()) {
+			model.addAttribute("venues", venue);
+			return "venues/update";
+		}
+		
+		Venue venueUpdated = venueService.findById(id).get();
+		venueUpdated.setName(venue.getName());
+		venueUpdated.setCapacity(venue.getCapacity());
+		venueUpdated.setRoadName(venue.getRoadName());
+		venueUpdated.setPostcode(venue.getPostcode());
+
+		venueService.save(venueUpdated);
+		redirectAttrs.addFlashAttribute("ok_message", "The venue has been updated.");
+		
+		return "redirect:/venues";
+	}
 }
