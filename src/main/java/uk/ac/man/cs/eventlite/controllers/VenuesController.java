@@ -78,6 +78,13 @@ public class VenuesController {
 
 		return "venues/index";
 	}
+	
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
+	public String searchVenueByNameContaining(@RequestParam("name") String name, Model model) {
+		model.addAttribute("venues", venueService.findByNameIgnoreCaseContainingOrderByNameAsc(name));
+		
+		return "venues/index";
+	}
 		
 	@GetMapping("/new")
 	public String newVenue(Model model) {
