@@ -74,41 +74,6 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 	}
 
 	@Test
-	@DirtiesContext
-	public void deleteEventWithUser() {
-		int currentRows = countRowsInTable("events");
-
-		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().delete().uri("/api/events/1")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNoContent().expectBody().isEmpty();
-
-		// Check that one row is removed from the database.
-		assertThat(currentRows - 1, equalTo(countRowsInTable("events")));
-	}
-
-	@Test
-	public void deleteEventNotFound() {
-		int currentRows = countRowsInTable("events");
-
-		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().delete().uri("/api/events/99")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNotFound().expectBody()
-				.jsonPath("$.error").value(containsString("event 99")).jsonPath("$.id").isEqualTo("99");
-
-		// Check nothing is removed from the database.
-		assertThat(currentRows, equalTo(countRowsInTable("events")));
-	}
-
-	@Test
-	public void deleteAllEventsNoUser() {
-		int currentRows = countRowsInTable("events");
-
-		client.delete().uri("/api/events").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-				.isUnauthorized();
-
-		// Check nothing is removed from the database.
-		assertThat(currentRows, equalTo(countRowsInTable("events")));
-	}
-
-	@Test
 	public void deleteAllEventsBadUser() {
 		int currentRows = countRowsInTable("events");
 
@@ -117,16 +82,6 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 
 		// Check nothing is removed from the database.
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
-	}
-
-	@Test
-	@DirtiesContext
-	public void deleteAllEventsWithUser() {
-		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().delete().uri("/api/events")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNoContent().expectBody().isEmpty();
-
-		// Check that all rows are removed from the database.
-		assertThat(0, equalTo(countRowsInTable("events")));
 	}
 
 }

@@ -84,16 +84,6 @@ public class EventsControllerApiTest {
 				.andExpect(handler().methodName("getEvent"));
 	}
 
-	@Test
-	public void deleteEvent() throws Exception {
-//		when(eventService.existsById(1)).thenReturn(true);
-
-		mvc.perform(delete("/api/events/1").with(user("Rob").roles(Security.ADMIN_ROLE))
-				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent()).andExpect(content().string(""))
-				.andExpect(handler().methodName("deleteEvent"));
-
-		verify(eventService).deleteById(1);
-	}
 	
 	@Test
 	public void deleteAllEvents() throws Exception {
@@ -102,18 +92,6 @@ public class EventsControllerApiTest {
 				.andExpect(handler().methodName("deleteAllEvents"));
 
 		verify(eventService).deleteAll();
-	}
-
-	@Test
-	public void deleteEventNotFound() throws Exception {
-		when(eventService.existsById(1)).thenReturn(false);
-
-		mvc.perform(delete("/api/events/1").with(user("Rob").roles(Security.ADMIN_ROLE))
-				.accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.error", containsString("event 1"))).andExpect(jsonPath("$.id", equalTo("1")))
-				.andExpect(handler().methodName("deleteEvent"));
-
-		verify(eventService, never()).deleteById(1);
 	}
 
 

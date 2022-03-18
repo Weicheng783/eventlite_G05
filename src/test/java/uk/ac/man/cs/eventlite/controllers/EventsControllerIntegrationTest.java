@@ -73,36 +73,6 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 	}
 
 	@Test
-	@DirtiesContext
-	public void deleteEventWithUser() {
-		int currentRows = countRowsInTable("events");
-		String[] tokens = login();
-
-		// The session ID cookie holds our login credentials.
-		// And for a DELETE we have no body, so we pass the CSRF token in the headers.
-		client.delete().uri("/events/1").accept(MediaType.TEXT_HTML).header(CSRF_HEADER, tokens[0])
-				.cookie(SESSION_KEY, tokens[1]).exchange().expectStatus().isFound().expectHeader()
-				.value("Location", endsWith("/events"));
-
-		// Check that one row is removed from the database.
-		assertThat(currentRows - 1, equalTo(countRowsInTable("events")));
-	}
-
-	@Test
-	public void deleteEventNotFound() {
-		int currentRows = countRowsInTable("events");
-		String[] tokens = login();
-
-		// The session ID cookie holds our login credentials.
-		// And for a DELETE we have no body, so we pass the CSRF token in the headers.
-		client.delete().uri("/events/99").accept(MediaType.TEXT_HTML).header(CSRF_HEADER, tokens[0])
-				.cookie(SESSION_KEY, tokens[1]).exchange().expectStatus().isNotFound();
-
-		// Check nothing is removed from the database.
-		assertThat(currentRows, equalTo(countRowsInTable("events")));
-	}
-
-	@Test
 	public void deleteAllEventsNoUser() {
 		int currentRows = countRowsInTable("events");
 
@@ -112,44 +82,6 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 
 		// Check that nothing is removed from the database.
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
-	}
-
-	@Test
-	@DirtiesContext
-	public void deleteAllEventsWithUser() {
-		String[] tokens = login();
-
-		// The session ID cookie holds our login credentials.
-		// And for a DELETE we have no body, so we pass the CSRF token in the headers.
-		client.delete().uri("/events").accept(MediaType.TEXT_HTML).header(CSRF_HEADER, tokens[0])
-				.cookie(SESSION_KEY, tokens[1]).exchange().expectStatus().isFound().expectHeader()
-				.value("Location", endsWith("/events"));
-
-		// Check that all rows are removed from the database.
-		assertThat(0, equalTo(countRowsInTable("events")));
-	}
-	
-	private String[] login() {
-		String[] tokens = new String[2];
-
-		// Although this doesn't POST the log in form it effectively logs us in.
-		// If we provide the correct credentials here, we get a session ID back which
-		// keeps us logged in.
-		EntityExchangeResult<String> result = client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get()
-				.uri("/").accept(MediaType.TEXT_HTML).exchange().expectBody(String.class).returnResult();
-		tokens[0] = getCsrfToken(result.getResponseBody());
-		tokens[1] = result.getResponseCookies().getFirst(SESSION_KEY).getValue();
-
-		return tokens;
-	}
-
-	private String getCsrfToken(String body) {
-		Matcher matcher = CSRF.matcher(body);
-
-		// matcher.matches() must be called; might as well assert something as well...
-		assertThat(matcher.matches(), equalTo(true));
-
-		return matcher.group(1);
 	}
 
 

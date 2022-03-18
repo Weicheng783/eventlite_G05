@@ -30,7 +30,8 @@ public class VenueServiceImpl implements VenueService {
 
 	@Override
 	public Iterable<Venue> findAll() {
-		return venueRepository.findAll();
+//		return venueRepository.findAll();
+		return venueRepository.findAllByOrderByNameAsc();
 	}
 	
 	@Override
@@ -46,6 +47,16 @@ public class VenueServiceImpl implements VenueService {
 	@Override
 	public Optional<Venue> findById(long id) {
 		return venueRepository.findById(id);
+	}
+
+	@Override
+	public boolean existsById(long id) {
+		return venueRepository.existsById(id);
+	}
+
+	@Override
+	public void deleteById(long id) {
+		venueRepository.deleteById(id);
 	}
 
 }

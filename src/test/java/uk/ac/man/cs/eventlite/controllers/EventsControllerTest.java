@@ -65,35 +65,6 @@ public class EventsControllerTest {
 	private VenueService venueService;
 
 	@Test
-	public void getIndexWhenNoEvents() throws Exception {
-		when(eventService.findAll()).thenReturn(Collections.<Event>emptyList());
-		when(venueService.findAll()).thenReturn(Collections.<Venue>emptyList());
-
-		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
-				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
-
-		verify(eventService).findAll();
-		// verify(venueService).findAll();
-		verifyNoInteractions(event);
-		verifyNoInteractions(venue);
-	}
-
-	@Test
-	public void getIndexWithEvents() throws Exception {
-		when(venue.getName()).thenReturn("Kilburn Building");
-		when(venueService.findAll()).thenReturn(Collections.<Venue>singletonList(venue));
-
-		when(event.getVenue()).thenReturn(venue);
-		when(eventService.findAll()).thenReturn(Collections.<Event>singletonList(event));
-
-		mvc.perform(get("/events").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
-				.andExpect(view().name("events/index")).andExpect(handler().methodName("getAllEvents"));
-
-		verify(eventService).findAll();
-		// verify(venueService).findAll();
-	}
-
-	@Test
 	public void getEventNotFound() throws Exception {
 		mvc.perform(get("/events/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
 				.andExpect(view().name("events/not_found")).andExpect(handler().methodName("getEvent"));
@@ -219,16 +190,6 @@ public class EventsControllerTest {
 
 
 			verify(eventService, never()).save(event);
-		}
-		@Test
-		public void deleteEvent() throws Exception {
-			when(eventService.existsById(1)).thenReturn(true);
-
-			mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
-					.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events"))
-					.andExpect(handler().methodName("deleteEvent")).andExpect(flash().attributeExists("ok_message"));
-
-			verify(eventService).deleteById(1);
 		}
 		
 		@Test
