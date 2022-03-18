@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/default}" lang="en">
+<head>
+  <title>Venue Details</title>
+</head>
+<body>
+  <div layout:fragment="content">
+    <h1>Venue Details at glance</h1>
+    <p class="fas fa-bolt" th:text="'Venue Name: ' + ${venue.name}"></p>
+    <br>
+    <p class="fas fa-map-marked-alt" th:text="'Venue Address: ' + ${venue.address}"></p>
+    <br>
+    <p class="fas fa-bolt" th:text="'Venue Capacity: ' + (${venue.capacity})"></p>
+    <br>
+
+    <p>
+      <a class="btn btn-primary" role="button" th:href="@{/venues}"><i class="fas fa-arrow-left" aria-hidden="true"></i> Venues list</a>
+    </p>
+    
+    <td>
+      <form th:action="@{/venues/{id}(id=${venue.id})}" th:method="delete" sec:authorize="isAuthenticated()">
+         <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete</button>
+      </form>
+    </td>
+
+    <td>
+      <form th:action="@{/venues/{id}(id=${venue.id})}" th:method="delete" sec:authorize="isAuthenticated()">
+         <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
+      </form>
+    </td>
+
+  </div>
+
+</body>
+</html>
