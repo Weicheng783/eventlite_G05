@@ -8,7 +8,7 @@
 </head>
 <body>
   <div layout:fragment="content">
-    <h1>All events</h1>
+    <h1>All Events</h1>
 
 	<form action="/events/search" method="get">
 		<div class="input-group pb-4">
@@ -24,6 +24,10 @@
          <button type="submit" class="btn btn-danger" sec:authorize="isAuthenticated()"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Events</button>
       </form>
     </td>
+    
+    <p>
+      <a class="btn btn-primary" role="button" href="/venues" sec:authorize="isAuthenticated()"><i class="fas fa-list" aria-hidden="true"></i> Go To Venues List</a>
+    </p>
     
     
 	<h2>Upcoming Events</h2>
@@ -47,7 +51,7 @@
 
 <!--           <div sec:authorize="hasRole('ORGANISER')">-->
             <td>
-            <a class="btn btn-primary" role="button" th:method="get" sec:authorize="isAuthenticated()" th:href="@{/events/update/{num}(num=${e.id})}">Update</a >
+            <a class="btn btn-primary" role="button" th:method="get" sec:authorize="isAuthenticated()" th:href="@{/events/update/{num}(num=${e.id})}">Update</a>
          	</td>
 <!--           </div>-->
 

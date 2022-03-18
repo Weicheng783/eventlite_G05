@@ -18,6 +18,7 @@ import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 import javax.validation.Valid;
@@ -77,4 +78,15 @@ public class VenuesControllerApi {
 
         return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
     }
+    
+	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
+	public ResponseEntity<?> deleteVenue(@PathVariable("id") long id){
+		if (!venueService.existsById(id)) {
+			throw new EventNotFoundException(id);
+		}
+
+		venueService.findById(id).orElseThrow();
+		venueService.deleteById(id);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+	}
 }

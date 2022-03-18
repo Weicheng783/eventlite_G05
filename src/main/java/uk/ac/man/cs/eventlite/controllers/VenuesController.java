@@ -99,6 +99,15 @@ public class VenuesController {
 		venueService.save(venue);
 		redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
 
+
+		return "redirect:/venues";
+	}
+	
+	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)
+	public String deleteVenue(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
+		venueService.findById(id).orElseThrow(() -> new EventNotFoundException(id));
+		venueService.deleteById(id);
+		redirectAttrs.addFlashAttribute("ok_message", "Selected venue deleted!");
 		return "redirect:/venues";
 	}
 }
