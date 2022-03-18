@@ -9,6 +9,8 @@ public interface VenueService {
 	public long count();
 
 	public Iterable<Venue> findAll();
+	
+	public Iterable<Venue> findByNameIgnoreCaseContainingOrderByNameAsc(String name);
 
 	public Venue save(Venue venue);
 

@@ -32,6 +32,11 @@ public class VenueServiceImpl implements VenueService {
 //		return venueRepository.findAll();
 		return venueRepository.findAllByOrderByNameAsc();
 	}
+	
+	@Override
+	public Iterable<Venue> findByNameIgnoreCaseContainingOrderByNameAsc(String name) {
+		return venueRepository.findByNameIgnoreCaseContainingOrderByNameAsc(name);
+	}
 
 	@Override
 	public Venue save(Venue venue) {
