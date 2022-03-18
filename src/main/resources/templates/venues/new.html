@@ -15,10 +15,15 @@
         <input class="form-control" type="text" name="name" id="name" autofocus="autofocus" />
         <p class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">errors</p>
       </div>
-      <div class="form-group" th:classappend="${#fields.hasErrors('address')}? has-error">
-        <label for="address">Address</label>
-        <input class="form-control" type="text" name="address" id="address" />
-       	<p class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">errors</p>
+      <div class="form-group" th:classappend="${#fields.hasErrors('roadName')}? has-error">
+        <label for="roadName">Road Name</label>
+        <input class="form-control" type="text" name="roadName" id="roadName" />
+       	<p class="text-danger" th:if="${#fields.hasErrors('roadName')}" th:errors="*{roadName}">errors</p>
+      </div>
+      <div class="form-group" th:classappend="${#fields.hasErrors('postcode')}? has-error">
+        <label for="postcode">Postcode</label>
+        <input class="form-control" type="text" name="postcode" id="postcode" />
+       	<p class="text-danger" th:if="${#fields.hasErrors('postcode')}" th:errors="*{postcode}">errors</p>
       </div>
       <div class="form-group" th:classappend="${#fields.hasErrors('capacity')}? has-error">
         <label for="capacity">Capacity</label>

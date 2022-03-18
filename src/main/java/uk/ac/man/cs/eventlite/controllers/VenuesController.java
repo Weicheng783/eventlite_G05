@@ -34,6 +34,7 @@ import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 @Controller
 @RequestMapping(value = "/venues", produces = { MediaType.TEXT_HTML_VALUE })
@@ -62,8 +63,8 @@ public class VenuesController {
 		Optional<Venue> venue = venueService.findById(id);
 		HttpHeaders headers = new HttpHeaders();
 		if (venue.isEmpty()) {
-			log.info("Event not found");
-			throw new EventNotFoundException(id);
+			log.info("Venue not found");
+			throw new VenueNotFoundException(id);
 		}
 
 		log.info("Venue found. redirecting...");

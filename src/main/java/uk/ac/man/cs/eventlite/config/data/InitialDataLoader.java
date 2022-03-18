@@ -35,13 +35,15 @@ public class InitialDataLoader {
 				Venue testVenue = new Venue();
 				testVenue.setName("Manchester Academy");
 				testVenue.setCapacity(1000);
-				testVenue.setAddress("4 Random Street");
+				testVenue.setRoadName("4 Random Street");
+				testVenue.setPostcode("M13 9WJ");
 				venueService.save(testVenue);
 
 				Venue testVenue2 = new Venue();
 				testVenue2.setName("Engineering Building");
 				testVenue2.setCapacity(5000);
-				testVenue.setAddress("5 Random Street");
+				testVenue2.setRoadName("5 Random Street");
+				testVenue2.setPostcode("M13 9WJ");
 				venueService.save(testVenue2);
 			}
 
@@ -52,7 +54,8 @@ public class InitialDataLoader {
 				Venue testVenue = new Venue();
 				testVenue.setName("Manchester Academy 2");
 				testVenue.setCapacity(1000);
-				testVenue.setAddress("4 Random Street");
+				testVenue.setRoadName("4 Random Street");
+				testVenue.setPostcode("M13 9WJ");
 				venueService.save(testVenue);
 
 				Event event1 = new Event();

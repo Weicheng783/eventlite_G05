@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Venue {
@@ -15,10 +16,16 @@ public class Venue {
 
 	@Column(unique=true)
 	@NotEmpty(message = "Name of venue should not be empty")
+	@Size(max=255, message="Venue name should be less than 256 characters")
 	private String name;
 
-	@NotEmpty(message = "Venue must have an address")
-	private String address;
+	@NotEmpty(message = "Road name should not be empty")
+	@Size(max=299, message = "Road name must be less than 300 characters")
+	private String roadName;
+
+	@NotEmpty(message = "Venue must have a postcode")
+	@Size(max=7, message = "Post code too long")
+	private String postcode;
 
 	private int capacity;
 
@@ -49,11 +56,19 @@ public class Venue {
 		this.capacity = capacity;
 	}
 
-	public String getAddress() {
-		return this.address;
+	public String getRoadName() {
+		return this.roadName;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setRoadName(String address) {
+		this.roadName = address;
+	}
+
+	public String getPostcode() {
+		return this.postcode;
+	}
+
+	public void setPostcode(String postcode) {
+		this.postcode = postcode;
 	}
 }
