@@ -82,7 +82,7 @@ public class VenuesControllerApi {
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
 	public ResponseEntity<?> deleteVenue(@PathVariable("id") long id){
 		if (!venueService.existsById(id)) {
-			throw new EventNotFoundException(id);
+			throw new VenueNotFoundException(id);
 		}
 
 		venueService.findById(id).orElseThrow();

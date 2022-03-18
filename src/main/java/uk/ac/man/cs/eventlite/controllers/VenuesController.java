@@ -43,9 +43,6 @@ public class VenuesController {
 	private final static Logger log = LoggerFactory.getLogger(VenuesController.class);
 
 	@Autowired
-	private EventService eventService;
-
-	@Autowired
 	private VenueService venueService;
 
 	private long id;
@@ -139,6 +136,7 @@ public class VenuesController {
 		
 		Venue venueUpdated = venueService.findById(id).get();
 		venueUpdated.setName(venue.getName());
+		venueUpdated.setAddress(venue.getAddress());
 		venueUpdated.setCapacity(venue.getCapacity());
 		venueUpdated.setRoadName(venue.getRoadName());
 		venueUpdated.setPostcode(venue.getPostcode());

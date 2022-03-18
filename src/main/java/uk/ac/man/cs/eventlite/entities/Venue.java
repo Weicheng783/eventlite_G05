@@ -21,7 +21,9 @@ public class Venue {
 	@NotEmpty(message = "Name of venue should not be empty")
 	@Size(max=255, message="Venue name should be less than 256 characters")
 	private String name;
-
+	
+	@NotEmpty(message = "Venue must have an address")
+	private String address;
 
 	@NotEmpty(message = "Road name should not be empty")
 	@Size(max=299, message = "Road name must be less than 300 characters")
@@ -76,5 +78,13 @@ public class Venue {
 
 	public void setPostcode(String postcode) {
 		this.postcode = postcode;
+	}
+	
+	public String getAddress() {
+		return this.address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 }

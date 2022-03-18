@@ -29,18 +29,19 @@
       <thead>
         <tr>
           <th><i class="fas fa-bolt"></i> Venue Name</th>
+          <th><i class="fas fa-map-marker-alt"></i> Address</th>
           <th><i class="fas fa-map-marker-alt"></i> Road name</th>
-          <th><i class="fas fa-map-marker-alt"></i> Postcode</th>
+          <th><i class="fas fa-home"></i> Postcode</th>
           <th><i class="fas fa-chart-bar"></i> Capacity</th>
         </tr>
       </thead>
       <tbody>
         <tr th:each="v : ${venues}">
           <td><a th:href="@{/venues/{id}(id=${v.id})}" th:text="${v.name}"></a></td>
-          <td th:text="${v.roadName}">Venue road name</td>
-          <td th:text="${v.postcode}">Venue postcode</td>
-          <td th:text="${v.address}">Venue address</td>
-          <td th:text="${v.capacity}">Venue capacity</td>
+          <td th:text="${v.address}">Venue Address</td>
+          <td th:text="${v.roadName}">Venue Road Name</td>
+          <td th:text="${v.postcode}">Venue Postcode</td>
+          <td th:text="${v.capacity}">Venue Capacity</td>
           <td>
             <a class="btn btn-primary" role="button" th:method="get" sec:authorize="isAuthenticated()" th:href="@{/venues/update/{num}(num=${v.id})}">Update</a >
      	  </td>
