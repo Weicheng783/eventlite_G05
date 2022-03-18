@@ -28,6 +28,9 @@
           <td th:text="${v.name}">Venue name</td>
           <td th:text="${v.address}">Venue address</td>
           <td th:text="${v.capacity}">Venue capacity</td>
+          <td>
+            <a class="btn btn-primary" role="button" th:method="get" sec:authorize="isAuthenticated()" th:href="@{/venues/update/{num}(num=${v.id})}">Update</a >
+         	</td>
 
         </tr>
 

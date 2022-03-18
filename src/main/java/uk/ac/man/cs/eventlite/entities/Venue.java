@@ -4,7 +4,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Venue {
@@ -14,12 +17,16 @@ public class Venue {
 	private long id;
 
 	@Column(unique=true)
+	@Size(max = 255, message="Venue name should be less than 256 characters")
 	@NotEmpty(message = "Name of venue should not be empty")
 	private String name;
 
 	@NotEmpty(message = "Venue must have an address")
+	@Size(max = 300, message="Venue address should be less than 300 characters")
 	private String address;
-
+	
+	@NotNull(message= "Venue must have a capacity")
+	@Min(value=1, message = "Capacity must be a positive integer")
 	private int capacity;
 
 	public Venue() {
