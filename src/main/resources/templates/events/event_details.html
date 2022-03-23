@@ -11,11 +11,13 @@
     <h1>Event details</h1>
     <p class="fas fa-bolt" th:text="'Event name: ' + ${event.name}"></p>
     <br>
-    <p class="fas fa-map-marked-alt" th:text="'Venue: ' + ${event.venue.name}"></p>
-    <br>
     <p class="fas fa-calendar" th:text="'Event date: ' + (${event.date} ?: 'No date given.')"></p>
     <br>
     <p class="fas fa-clock" th:text="'Event time: ' + (${event.time} ?: 'No time given.')"></p>
+    <br>
+    <p class="fas fa-map-marked-alt" th:text="'Venue: ' + ${event.venue.name}"></p>
+    <br>
+    <p class="fas fa-map-marked-alt" th:text="'Description: ' + (${event.description} ?: 'No description given.')"></p>
     <br>
 
     <p>
