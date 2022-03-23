@@ -98,6 +98,7 @@ public class VenuesController {
 
 		if (errors.hasErrors()) {
 			model.addAttribute("venue", venue);
+			System.out.println(errors.getAllErrors());
 			return "venues/new";
 		}
 
