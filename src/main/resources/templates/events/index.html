@@ -119,8 +119,13 @@
 for (var event of futureEvents){
 	 const marker1 = new mapboxgl.Marker()
  	.setLngLat([event.venue.longitude, event.venue.latitude])
+ 	.setPopup(
+			new mapboxgl.Popup({ offset: 25 }) // add popups
+			.setHTML(
+`		<h3>${event.name}</h3><p>Starts at: ${event.time}</p>`
+		)
+		)
  	.addTo(map);
- 	console.log(event.venue.longitude);
 }
  // Create a default Marker and add it to the map.
  const marker1 = new mapboxgl.Marker()
