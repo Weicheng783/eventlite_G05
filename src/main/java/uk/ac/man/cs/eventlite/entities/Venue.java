@@ -85,11 +85,12 @@ public class Venue {
 		this.postcode = postcode;
 	}
 	
-	// public String getAddress() {
-	// 	return this.address;
-	// }
+	 public String getAddress() {
+//	 	return this.address;
+         return "No address";
+	 }
 
-	// public void setAddress(String address) {
-	// 	this.address = address;
-	// }
+	 public void setAddress(String address) {
+//	 	this.address = address;
+	 }
 }
