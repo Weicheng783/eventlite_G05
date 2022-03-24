@@ -40,7 +40,7 @@
   <div id="map" style="position: absolute; top: 0px; width: 100%; height: 600px;  border-radius: 20px; "></div>
   <div id="placeholder" style="height:200px;"></div>
   
-<script>
+<script th:inline="javascript">
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
 const map = new mapboxgl.Map({
@@ -50,10 +50,11 @@ center: [-2.230912, 53.465211],
 zoom: 8
 });
 
-// Create a default Marker and add it to the map.
-const marker1 = new mapboxgl.Marker()
-.setLngLat([12.554729, 55.70651])
-.addTo(map);
+var currentEvent = [[${event}]];
+	 const marker1 = new mapboxgl.Marker()
+ 	.setLngLat([currentEvent.venue.longitude, currentEvent.venue.latitude])
+ 	.addTo(map);
+
 
 var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
 document.getElementById("map").style.width = width+"px";
