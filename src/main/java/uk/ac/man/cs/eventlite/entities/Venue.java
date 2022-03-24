@@ -20,12 +20,8 @@ public class Venue {
 	@Column(unique=true)
 	@Size(max = 255, message="Venue name should be less than 256 characters")
 	@NotEmpty(message = "Name of venue should not be empty")
-	@Size(max=255, message="Venue name should be less than 256 characters")
 	private String name;
 	
-	// @NotEmpty(message = "Venue must have an address")
-	// private String address;
-
 	@NotEmpty(message = "Road name should not be empty")
 	@Size(max=299, message = "Road name must be less than 300 characters")
 	@Pattern(regexp = "\\A(\\d+[a-zA-Z]{0,1}\\s{0,1}[-]{1}\\s{0,1}\\d*[a-zA-Z]{0,1}|\\d+[a-zA-Z-]{0,1}\\d*[a-zA-Z]{0,1})\\s*+(.*)",
@@ -41,6 +37,12 @@ public class Venue {
 	@NotNull(message= "Venue must have a capacity")
 	@Min(value=1, message = "Capacity must be a positive integer")
 	private int capacity;
+
+	@NotNull(message = "Venue must have a latitude coordinate")
+	private double latitude;
+
+	@NotNull(message = "Venue must have a longitude coordinate")
+	private double longitude;
 
 	public Venue() {
 	}
@@ -84,13 +86,20 @@ public class Venue {
 	public void setPostcode(String postcode) {
 		this.postcode = postcode;
 	}
-	
-	 public String getAddress() {
-//	 	return this.address;
-         return "No address";
-	 }
 
-	 public void setAddress(String address) {
-//	 	this.address = address;
-	 }
+	public double getLatitude() {
+		return this.latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return this.longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
 }
