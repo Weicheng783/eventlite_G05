@@ -44,7 +44,10 @@ public class VenuesController {
 
 	@Autowired
 	private VenueService venueService;
-
+	
+	@Autowired
+	private EventService eventService;
+	
 	private long id;
 
 	@ExceptionHandler(EventNotFoundException.class)
@@ -111,7 +114,18 @@ public class VenuesController {
 	
 	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)
 	public String deleteVenue(@PathVariable("id") long id, RedirectAttributes redirectAttrs) {
-		venueService.findById(id).orElseThrow(() -> new EventNotFoundException(id));
+
+		// A venue cannot be deleted if it has one or more events.
+		Iterable<Event> allEvents = eventService.findAll();
+		for(Event t:allEvents) {
+			if(t.getVenue().getName().compareTo(venueService.findById(id).get().getName()) == 0) {
+				redirectAttrs.addFlashAttribute("ok_message", "Cannot delete this venue because it has at least one event contains.");
+				System.out.println("Cannot delete this venue because it has at least one event contains.");
+				return "redirect:/venues/" + id;
+			}
+		}
+
+		venueService.findById(id).orElseThrow(() -> new VenueNotFoundException(id));
 		venueService.deleteById(id);
 		redirectAttrs.addFlashAttribute("ok_message", "Selected venue deleted!");
 		return "redirect:/venues";

@@ -72,12 +72,20 @@ public class EventsController {
 			if (event.getDate() == null) {
 				continue;
 			}
-			if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
+			else if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
 				eventFuture.add(event);
-			} else {
+			}
+		}
+		
+		for (Event event : eventService.findAllByOrderByDateDescNameAsc()) {
+			if (event.getDate() == null) {
+				continue;
+			}
+			else if (dateNow.isAfter(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isAfter(event.getTime()))) {
 				eventPast.add(event);
 			}
 		}
+
 		
 		model.addAttribute("eventFuture", eventFuture);
 		model.addAttribute("eventPast", eventPast);
