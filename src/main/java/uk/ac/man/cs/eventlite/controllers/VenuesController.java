@@ -3,9 +3,15 @@ package uk.ac.man.cs.eventlite.controllers;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
+
+import com.mapbox.api.geocoding.v5.MapboxGeocoding;
+import com.mapbox.api.geocoding.v5.models.CarmenFeature;
+import com.mapbox.api.geocoding.v5.models.GeocodingResponse;
+import com.mapbox.geojson.Point;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -41,6 +50,8 @@ import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 public class VenuesController {
 
 	private final static Logger log = LoggerFactory.getLogger(VenuesController.class);
+
+	private final String MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ";
 
 	@Autowired
 	private VenueService venueService;
@@ -102,11 +113,51 @@ public class VenuesController {
 			return "venues/new";
 		}
 
-		venueService.save(venue);
-		redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
+		MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
+			.accessToken(MAPBOX_ACCESS_TOKEN)
+			.query(venue.getRoadName() + " " + venue.getPostcode())
+			.build();
 
+		try {
+			Thread.sleep(1000L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
-		return "redirect:/venues";
+		mapboxGeocoding.enqueueCall(new Callback<GeocodingResponse>() {
+			@Override
+			public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+			
+				List<CarmenFeature> results = response.body().features();
+			
+				if (results.size() > 0) {
+			
+					// Log the first results Point.
+					Point firstResultPoint = results.get(0).center();
+					log.info("onResponse: " + firstResultPoint.toString());
+					venue.setLatitude(firstResultPoint.latitude());
+					venue.setLongitude(firstResultPoint.longitude());
+					venueService.save(venue);
+					redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
+			
+				} else {
+					
+					// No result for your request were found.
+					log.error("onResponse: No result found");
+			
+				}
+			}
+			
+			@Override
+			public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
+				throwable.printStackTrace();
+			}
+		});
+
+		if(venue.getLatitude() != 0)
+			return "redirect:/venues";
+		else
+			return "venues/new";
 	}
 	
 	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)
@@ -137,14 +188,51 @@ public class VenuesController {
 		
 		Venue venueUpdated = venueService.findById(id).get();
 		venueUpdated.setName(venue.getName());
-		venueUpdated.setAddress(venue.getAddress());
 		venueUpdated.setCapacity(venue.getCapacity());
 		venueUpdated.setRoadName(venue.getRoadName());
 		venueUpdated.setPostcode(venue.getPostcode());
 
-		venueService.save(venueUpdated);
-		redirectAttrs.addFlashAttribute("ok_message", "The venue has been updated.");
-		
+		MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
+			.accessToken(MAPBOX_ACCESS_TOKEN)
+			.query(venueUpdated.getRoadName() + " " + venueUpdated.getPostcode())
+			.build();
+
+		try {
+			Thread.sleep(1000L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		mapboxGeocoding.enqueueCall(new Callback<GeocodingResponse>() {
+			@Override
+			public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
+			
+				List<CarmenFeature> results = response.body().features();
+			
+				if (results.size() > 0) {
+			
+					// Log the first results Point.
+					Point firstResultPoint = results.get(0).center();
+					log.info("onResponse: " + firstResultPoint.toString());
+					venueUpdated.setLatitude(firstResultPoint.latitude());
+					venueUpdated.setLongitude(firstResultPoint.longitude());
+					venueService.save(venueUpdated);
+					redirectAttrs.addFlashAttribute("ok_message", "The venue has been updated.");
+			
+				} else {
+					
+					// No result for your request were found.
+					log.error("onResponse: No result found");
+			
+				}
+			}
+			
+			@Override
+			public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
+				throwable.printStackTrace();
+			}
+		});
+
 		return "redirect:/venues";
 	}
 }

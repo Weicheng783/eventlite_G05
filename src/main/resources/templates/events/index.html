@@ -5,6 +5,12 @@
       layout:decorate="~{layouts/default}">
 <head>
   <title>All events</title>
+
+  <style>
+
+    #map { position: absolute; top: 0; bottom: 0; width: 50%; }
+
+  </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -104,6 +110,23 @@
                                                                                                      aria-hidden="true"></i>
       Add a new event</a>
   </p>
+
+  <div id="map"></div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
+    const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-2.230912, 53.465211],
+    zoom: 8
+    });
+    
+    // Create a default Marker and add it to the map.
+    const marker1 = new mapboxgl.Marker()
+    .setLngLat([12.554729, 55.70651])
+    .addTo(map);
+  </script>
 
 </div>
 
