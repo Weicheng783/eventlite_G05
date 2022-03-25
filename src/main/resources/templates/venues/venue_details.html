@@ -35,6 +35,37 @@
          <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
       </form>
     </td>
+    
+  <h2>Upcoming Events</h2>
+  <table class="table table-striped table-hover">
+    <thead>
+    <tr>
+      <th><i class="fas fa-bolt"></i> Event</th>
+      <th><i class="fas fa-map-marker-alt"></i> Venue</th>
+      <th><i class="fas fa-calendar"></i> Date</th>
+      <th><i class="fas fa-clock"></i> Time</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="e : ${eventFuture}">
+      <td>
+        <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}"></a>
+      </td>
+      <td><a th:href="@{/venues/{id}(id=${e.venue.id})}" th:text="${e.venue.name}"></a></td>
+      <td th:text="${e.date}">Event date</td>
+      <td th:text="${e.time ?: '-'}">Event time</td>
+
+      <!--           <div sec:authorize="hasRole('ORGANISER')">-->
+      <td>
+        <a class="btn btn-primary" role="button" th:method="get" sec:authorize="isAuthenticated()"
+           th:href="@{/events/update/{num}(num=${e.id})}">Update</a>
+      </td>
+      <!--           </div>-->
+
+    </tr>
+
+    </tbody>
+  </table>
 
   </div>
 

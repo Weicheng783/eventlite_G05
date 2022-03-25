@@ -80,14 +80,30 @@ public class VenuesController {
 
 		log.info("Venue found. redirecting...");
 		model.addAttribute("venue", venue.get());
+		
+		// 20220325 Venue search upcoming eligible Events.
+		ArrayList<Event> eventFuture = new ArrayList<Event>();
+		LocalDate dateNow = LocalDate.now();
+		LocalTime timeNow = LocalTime.now();
+
+		for (Event event : eventService.findAllByOrderByDateAscNameAsc()) {
+			// If they are not equal OR event has no date, skip it.
+			if ( (event.getVenue().getName().compareTo(venueService.findById(id).get().getName()) != 0)  || (event.getDate() == null) ) {
+				continue;
+			}
+			else if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
+				eventFuture.add(event);
+			}
+		}
+		
+		model.addAttribute("eventFuture", eventFuture);
+		
 		return "venues/venue_details";
 	}
-
+	
 	@GetMapping
 	public String getAllVenues(Model model) {
-
-		 model.addAttribute("venues", venueService.findAll());
-
+		model.addAttribute("venues", venueService.findAll());
 		return "venues/index";
 	}
 	
@@ -96,7 +112,7 @@ public class VenuesController {
 		model.addAttribute("venues", venueService.findByNameIgnoreCaseContainingOrderByNameAsc(name));
 		return "venues/index";
 	}
-		
+
 	@GetMapping("/new")
 	public String newVenue(Model model) {
 		if (!model.containsAttribute("venue")) {

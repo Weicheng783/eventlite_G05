@@ -1,15 +1,20 @@
 package uk.ac.man.cs.eventlite.entities;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import uk.ac.man.cs.eventlite.dao.EventService;
 
 @Entity
 public class Venue {
@@ -48,6 +53,7 @@ public class Venue {
 	@Min(value=-180, message="Longitude must within -180.00 to +180.00 degree")
 	@Max(value=180, message="Longitude must within -180.00 to +180.00 degree")
 	private double longitude;
+
 
 	public Venue() {
 	}
