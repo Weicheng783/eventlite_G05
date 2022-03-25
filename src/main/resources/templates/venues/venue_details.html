@@ -6,7 +6,7 @@
 <head>
   <title>Venue Details</title>
 </head>
-<body>
+<body style="background-color: aliceblue;">
   <div layout:fragment="content">
     <h1>Venue Details at glance</h1>
     <p class="fas fa-bolt" th:text="' Venue Name: ' + ${venue.name}"></p>
@@ -20,6 +20,7 @@
     <p class="fas fa-bolt" th:text="' Venue Capacity: ' + (${venue.capacity})"></p>
     <br>
 
+	<div style="display:flex;">
     <p>
       <a class="btn btn-primary" role="button" th:href="@{/venues}"><i class="fas fa-arrow-left" aria-hidden="true"></i> Venues list</a>
     </p>
@@ -32,9 +33,10 @@
 
     <td>
       <form th:action="@{/venues/{id}(id=${venue.id})}" th:method="delete" sec:authorize="isAuthenticated()">
-         <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
+         <button type="submit" class="btn btn-danger" style="margin-left:20px;"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
       </form>
     </td>
+    </div>
     
   <h2>Upcoming Events</h2>
   <table class="table table-striped table-hover">

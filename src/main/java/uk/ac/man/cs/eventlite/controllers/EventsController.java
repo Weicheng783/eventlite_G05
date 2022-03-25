@@ -114,6 +114,7 @@ public class EventsController {
 		if (errors.hasErrors()) {
 			model.addAttribute("event", event);
 			model.addAttribute("venues", venueService.findAll());
+			redirectAttrs.addFlashAttribute("error_message", "This event has not been updated correctly, please check carefully the fields and try it again.");
 			return "events/update";
 		}
 		

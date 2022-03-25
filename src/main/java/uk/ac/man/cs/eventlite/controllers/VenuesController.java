@@ -182,8 +182,7 @@ public class VenuesController {
 		Iterable<Event> allEvents = eventService.findAll();
 		for(Event t:allEvents) {
 			if(t.getVenue().getName().compareTo(venueService.findById(id).get().getName()) == 0) {
-				redirectAttrs.addFlashAttribute("ok_message", "Cannot delete this venue because it has at least one event contains.");
-				System.out.println("Cannot delete this venue because it has at least one event contains.");
+				redirectAttrs.addFlashAttribute("error_message", "Cannot delete this venue because it has at least one event contains.");
 				return "redirect:/venues/" + id;
 			}
 		}

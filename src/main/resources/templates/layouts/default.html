@@ -17,15 +17,43 @@
   <div class="container">
     <div sec:authorize="!isAuthenticated()">
       <i class="fas fa-user-slash" aria-hidden="true"></i> Not signed in
-      <a class="btn btn-primary" role="button" th:href="@{/sign-in}">
+      <a class="btn btn-primary" role="button" th:href="@{/sign-in}" style="margin-left:10px;">
         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Sign in
       </a>
     </div>
     <div sec:authorize="isAuthenticated()">
       <form th:action="@{/sign-out}" method="post">
         <i class="fas fa-user" aria-hidden="true"></i> Signed in as <span sec:authentication="name"></span>
-        <button type="submit" class="btn btn-warning"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Sign out</button>
+        <button type="submit" class="btn btn-warning" style="margin-left:10px;"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Sign out</button>
       </form>
+    </div>
+
+    <div class="alert alert-success alert-dismissible" role="alert" th:if="${ok_message}" style="margin-top:10px; margin-bottom:0px;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+      <span th:text="${ok_message}">Success!</span>
+    </div>
+    
+     <div class="alert alert-danger alert-dismissible" role="alert" th:if="${error_message}" style="margin-top:10px; margin-bottom:0px;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+      <span th:text="${error_message}">Error Occurred!</span>
+    </div>
+    
+    <div class="alert alert-primary alert-dismissible" role="alert" th:if="${primary_message}" style="margin-top:10px; margin-bottom:0px;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+      <span th:text="${primary_message}">An primary message.</span>
+    </div>
+    
+    <div class="alert alert-info alert-dismissible" role="alert" th:if="${info_message}" style="margin-top:10px; margin-bottom:0px;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+      <span th:text="${info_message}">Information.</span>
     </div>
 
     <div layout:fragment="content">
