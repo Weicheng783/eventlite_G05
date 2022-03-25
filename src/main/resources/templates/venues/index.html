@@ -24,6 +24,11 @@
     <p>
       <a class="btn btn-primary" role="button" href="/events" sec:authorize="isAuthenticated()"><i class="fas fa-list" aria-hidden="true"></i> Go To Events List</a>
     </p>
+    
+    <p>
+	    <a class="btn btn-primary" role="button" href="/venues/new" sec:authorize="isAuthenticated()">
+	    <i class="fas fa-plus" aria-hidden="true"></i> Add a new venue</a>
+  	</p>
 
     <table class="table table-striped table-hover">
       <thead>

@@ -16,6 +16,16 @@
         <input class="form-control" type="text" name="name" value="Default" th:value="${{venue.name}}" id="name" autofocus="autofocus" />
         <p class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">errors</p>
       </div>
+      <div class="form-group" th:classappend="${#fields.hasErrors('latitude')}? has-error">
+        <label for="latitude">Latitude</label>
+        <input class="form-control" type="text" name="latitude" id="latitude" value="Default" th:value="${{venue.latitude}}"/>
+       	<p class="text-danger" th:if="${#fields.hasErrors('latitude')}" th:errors="*{latitude}">errors</p>
+      </div>
+      <div class="form-group" th:classappend="${#fields.hasErrors('longitude')}? has-error">
+        <label for="longitude">Longitude</label>
+        <input class="form-control" type="text" name="longitude" id="longitude" value="Default" th:value="${{venue.longitude}}"/>
+       	<p class="text-danger" th:if="${#fields.hasErrors('longitude')}" th:errors="*{longitude}">errors</p>
+      </div>
       <div class="form-group" th:classappend="${#fields.hasErrors('roadName')}? has-error">
         <label for="roadName">Road Name</label>
         <input class="form-control" type="text" name="roadName" id="roadName" value="Default" th:value="${{venue.roadName}}"/>
@@ -25,7 +35,7 @@
         <label for="postcode">Postcode</label>
         <input class="form-control" type="text" name="postcode" id="postcode" value="Default" th:value="${{venue.postcode}}"/>
        	<p class="text-danger" th:if="${#fields.hasErrors('postcode')}" th:errors="*{postcode}">errors</p>
-
+      </div>
       <div class="form-group" th:classappend="${#fields.hasErrors('capacity')}? has-error">
         <label for="capacity">Capacity</label>
         <input class="form-control" type="number" name="capacity" id="capacity"value="Default" th:value="${{venue.capacity}}"/>

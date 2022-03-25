@@ -94,7 +94,6 @@ public class VenuesController {
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String searchVenueByNameContaining(@RequestParam("name") String name, Model model) {
 		model.addAttribute("venues", venueService.findByNameIgnoreCaseContainingOrderByNameAsc(name));
-		
 		return "venues/index";
 	}
 		
@@ -188,7 +187,7 @@ public class VenuesController {
 
 		model.addAttribute("venue", venue);
 		
-		return "venues/update";
+		return "/venues/update";
 	}
 	
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.PUT)
@@ -197,7 +196,7 @@ public class VenuesController {
 		
 		if (errors.hasErrors()) {
 			model.addAttribute("venues", venue);
-			return "venues/update";
+			return "/venues/update";
 		}
 		
 		Venue venueUpdated = venueService.findById(id).get();
@@ -205,48 +204,15 @@ public class VenuesController {
 		venueUpdated.setCapacity(venue.getCapacity());
 		venueUpdated.setRoadName(venue.getRoadName());
 		venueUpdated.setPostcode(venue.getPostcode());
+		// NOTE: Here the latitude and longitude CAN be updated manually
+		// The redirect page also not refresh correctly if you add the Geocoding method here
+		// We needn't confine them to the value that is found on Geocoding
+		// Reference: Week 7 Lab manual - Warning 3: make sure that the postcode is used in the request so ambiguity is removed (ie there is one "Chapel Street" in almost all British towns).
+		venueUpdated.setLatitude(venue.getLatitude());
+		venueUpdated.setLongitude(venue.getLongitude());
 
-		MapboxGeocoding mapboxGeocoding = MapboxGeocoding.builder()
-			.accessToken(MAPBOX_ACCESS_TOKEN)
-			.query(venueUpdated.getRoadName() + " " + venueUpdated.getPostcode())
-			.build();
-
-		try {
-			Thread.sleep(1000L);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		mapboxGeocoding.enqueueCall(new Callback<GeocodingResponse>() {
-			@Override
-			public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-			
-				List<CarmenFeature> results = response.body().features();
-			
-				if (results.size() > 0) {
-			
-					// Log the first results Point.
-					Point firstResultPoint = results.get(0).center();
-					log.info("onResponse: " + firstResultPoint.toString());
-					venueUpdated.setLatitude(firstResultPoint.latitude());
-					venueUpdated.setLongitude(firstResultPoint.longitude());
-					venueService.save(venueUpdated);
-					redirectAttrs.addFlashAttribute("ok_message", "The venue has been updated.");
-			
-				} else {
-					
-					// No result for your request were found.
-					log.error("onResponse: No result found");
-			
-				}
-			}
-			
-			@Override
-			public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
-				throwable.printStackTrace();
-			}
-		});
-
+		venueService.save(venueUpdated);
+		redirectAttrs.addFlashAttribute("ok_message", "The venue has been updated.");
 		return "redirect:/venues";
 	}
 }

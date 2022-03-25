@@ -1,5 +1,7 @@
 package uk.ac.man.cs.eventlite.controllers;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -247,4 +249,20 @@ public class EventsController {
 		return "redirect:/events";
 	}
 
+	
+//	  @RequestMapping("queryEventsInfo") 
+//	  @ResponseBody
+//	  public Map<String, Object> queryEventsInfo(HttpServletRequest request,HttpServletResponse response){ 
+//	    Map<String, Object> map = new HashMap<String, Object>(); 
+//	    try {
+//	      @SuppressWarnings("rawtypes") 
+//	      List eventList = (List) eventService.findAll();
+//	      if(null != eventList && eventList.size() >0 ){ 
+//	        map.put("event", eventList); 
+//	      }
+//	    } catch (Exception e) {
+//	      e.printStackTrace(); 
+//	    }
+//	    return map; 
+//	  }
 }

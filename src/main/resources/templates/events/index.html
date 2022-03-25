@@ -5,15 +5,9 @@
       layout:decorate="~{layouts/default}">
 <head>
   <title>All events</title>
-
-  <style>
-
-    #map { position: absolute; top: 0; bottom: 0; width: 50%; }
-
-  </style>
 </head>
 <body>
-<div layout:fragment="content">
+<div layout:fragment="content"  id="main">
   <h1>All Events</h1>
 
   <form action="/events/search" method="get">
@@ -55,7 +49,7 @@
       <td>
         <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}"></a>
       </td>
-      <td th:text="${e.venue.name}">Event venue</td>
+      <td><a th:href="@{/venues/{id}(id=${e.venue.id})}" th:text="${e.venue.name}"></a></td>
       <td th:text="${e.date}">Event date</td>
       <td th:text="${e.time ?: '-'}">Event time</td>
 
@@ -87,7 +81,7 @@
       <td>
         <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}"></a>
       </td>
-      <td th:text="${e.venue.name}">Event venue</td>
+      <td><a th:href="@{/venues/{id}(id=${e.venue.id})}" th:text="${e.venue.name}"></a></td>
       <td th:text="${{e.date}}">Event date</td>
       <td th:text="${{e.time}}">Event time</td>
 
@@ -102,31 +96,66 @@
 
     </tbody>
   </table>
+  
 
   <p>
-    <a class="btn btn-primary" role="button" href="/events/new" sec:authorize="isAuthenticated()"><i class="fas fa-plus"
-                                                                                                     aria-hidden="true"></i>
-      Add a new event</a>
+    <a class="btn btn-primary" role="button" href="/events/new" sec:authorize="isAuthenticated()">
+    <i class="fas fa-plus" aria-hidden="true"></i>Add a new event</a>
   </p>
+  
+  <div id="indicator"></div>
+  <div id="map" style="position: absolute; top: 0px; width: 100%; height: 600px; bottom: 0px; "></div>
+  
+ <script>
+ mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
+ const map = new mapboxgl.Map({
+ container: 'map',
+ style: 'mapbox://styles/mapbox/streets-v11',
+ center: [-2.230912, 53.465211],
+ zoom: 8
+ });
+ 
+ // Create a default Marker and add it to the map.
+ const marker1 = new mapboxgl.Marker()
+ .setLngLat([12.554729, 55.70651])
+ .addTo(map);
+ 
+ //console.log(getElementOffset(document.getElementById("indicator")).top)
+ var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
+ document.getElementById("map").style.width = width+"px";
+ //getElementById("map").style.width
+ document.getElementById("map").style.top = getElementOffset(document.getElementById("indicator")).top + "px";
+ //document.getElementById("map").style.width = document.body.offsetWidth - document.getElementById("map").offsetLeft;
 
-  <div id="map"></div>
+ window.addEventListener('resize', function(event) {
+	 //console.log(getElementOffset(document.getElementById("indicator")).top)
+	 document.getElementById("map").style.top = getElementOffset(document.getElementById("indicator")).top + "px";
+	 var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
+	 document.getElementById("map").style.width = width+"px";
+ }, true);
+ 
+// Fetch an element's left and top according to the 0,0
+ function getElementOffset(element) {
+   let offset = {left: 0, top: 0}
+   let current = element.offsetParent
 
-  <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
-    const map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v11',
-    center: [-2.230912, 53.465211],
-    zoom: 8
-    });
-    
-    // Create a default Marker and add it to the map.
-    const marker1 = new mapboxgl.Marker()
-    .setLngLat([12.554729, 55.70651])
-    .addTo(map);
-  </script>
+   offset.left += element.offsetLeft
+   offset.top += element.offsetTop
 
+   while (current !== null) {
+     offset.left += current.offsetLeft
+     offset.top += current.offsetTop
+     current = current.offsetParent
+   }
+   return offset
+ }
+
+</script>
 </div>
-
+ 
 </body>
+
+
+
+
 </html>

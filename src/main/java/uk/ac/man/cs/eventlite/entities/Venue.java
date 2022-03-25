@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -39,9 +40,13 @@ public class Venue {
 	private int capacity;
 
 	@NotNull(message = "Venue must have a latitude coordinate")
+	@Min(value=-90, message="Latitude must within -90.00 to +90.00 degree")
+	@Max(value=90, message="Latitude must within -90.00 to +90.00 degree")
 	private double latitude;
 
 	@NotNull(message = "Venue must have a longitude coordinate")
+	@Min(value=-180, message="Longitude must within -180.00 to +180.00 degree")
+	@Max(value=180, message="Longitude must within -180.00 to +180.00 degree")
 	private double longitude;
 
 	public Venue() {
