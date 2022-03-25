@@ -41,16 +41,17 @@
   <div id="placeholder" style="height:200px;"></div>
   
 <script th:inline="javascript">
+var currentEvent = [[${event}]];
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
 const map = new mapboxgl.Map({
 container: 'map',
 style: 'mapbox://styles/mapbox/streets-v11',
-center: [-2.230912, 53.465211],
-zoom: 8
+center: [currentEvent.venue.longitude, currentEvent.venue.latitude],
+zoom: 13
 });
 
-var currentEvent = [[${event}]];
+
 	 const marker1 = new mapboxgl.Marker()
  	.setLngLat([currentEvent.venue.longitude, currentEvent.venue.latitude])
  	.setPopup(

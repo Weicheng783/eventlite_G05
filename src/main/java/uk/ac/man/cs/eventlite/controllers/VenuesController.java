@@ -126,6 +126,7 @@ public class VenuesController {
 			e.printStackTrace();
 		}
 
+		
 		mapboxGeocoding.enqueueCall(new Callback<GeocodingResponse>() {
 			@Override
 			public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
@@ -143,7 +144,6 @@ public class VenuesController {
 					redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
 			
 				} else {
-					
 					// No result for your request were found.
 					log.error("onResponse: No result found");
 			
@@ -155,11 +155,8 @@ public class VenuesController {
 				throwable.printStackTrace();
 			}
 		});
-
-		if(venue.getLatitude() != 0)
-			return "redirect:/venues";
-		else
-			return "venues/new";
+		
+		return "redirect:/venues";
 	}
 	
 	@RequestMapping(value="/{id}" ,method=RequestMethod.DELETE)

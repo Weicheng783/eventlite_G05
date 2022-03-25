@@ -113,11 +113,14 @@
  container: 'map',
  style: 'mapbox://styles/mapbox/streets-v11',
  center: [-2.230912, 53.465211],
- zoom: 8
+ zoom: 6
  });
  var futureEvents = [[${eventFuture}]];
+ var markers = [];
+ var coordinates = [];
+ var loopTime = 0;
 for (var event of futureEvents){
-	 const marker1 = new mapboxgl.Marker()
+	 markers[loopTime] = new mapboxgl.Marker()
  	.setLngLat([event.venue.longitude, event.venue.latitude])
  	.setPopup(
 			new mapboxgl.Popup({ offset: 25 }) // add popups
@@ -126,11 +129,11 @@ for (var event of futureEvents){
 		)
 		)
  	.addTo(map);
+	 
+	 coordinates[loopTime] = [event.venue.longitude, event.venue.latitude];
+	 
+	 loopTime ++;
 }
- // Create a default Marker and add it to the map.
- const marker1 = new mapboxgl.Marker()
- .setLngLat([12.554729, 55.70651])
- .addTo(map);
 
  var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
  document.getElementById("map").style.width = width+"px";
