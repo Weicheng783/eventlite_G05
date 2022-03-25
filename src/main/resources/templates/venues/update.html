@@ -7,9 +7,7 @@
 <body>
   <body>
   <div layout:fragment="content">
-
 	<h1>Update Venue</h1>
-
 	<form th:method="put" th:object="${venue}" th:action="@{/venues/update/{id}(id=${venue.id})}"  >
       <div class="form-group" th:classappend="${#fields.hasErrors('name')}? has-error">
         <label for="name">Venue Name</label>
@@ -44,6 +42,6 @@
 	  <button class="btn btn-primary" type="submit"><i class="fas fa-bookmark" aria-hidden="true"></i> Update</button>
       <a class="btn btn-warning" role="button" href="/venues"><i class="fas fa-ban" aria-hidden="true"></i> Cancel</a>
     </form>
-
+  </div>
 </body>
 </html>

@@ -35,8 +35,56 @@
          <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
       </form>
     </td>
+    
+  <div id="indicator" style="margin-top:20px;"></div>
+  <div id="map" style="position: absolute; top: 0px; width: 100%; height: 600px;  border-radius: 20px; "></div>
+  <div id="placeholder" style="height:200px;"></div>
+  
+<script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
+const map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/mapbox/streets-v11',
+center: [-2.230912, 53.465211],
+zoom: 8
+});
+
+// Create a default Marker and add it to the map.
+const marker1 = new mapboxgl.Marker()
+.setLngLat([12.554729, 55.70651])
+.addTo(map);
+
+var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
+document.getElementById("map").style.width = width+"px";
+document.getElementById("map").style.top = getElementOffset(document.getElementById("indicator")).top + "px";
+document.getElementById("placeholder").style.height = getElementOffset(document.getElementById("map")).top + 20 + "px";
+
+window.addEventListener('resize', function(event) {
+	 document.getElementById("map").style.top = getElementOffset(document.getElementById("indicator")).top + "px";
+	 var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
+	 document.getElementById("map").style.width = width+"px";
+	 document.getElementById("placeholder").style.height = getElementOffset(document.getElementById("map")).top + 20 + "px";
+}, true);
+
+//Fetch an element's left and top according to the 0,0
+function getElementOffset(element) {
+  let offset = {left: 0, top: 0}
+  let current = element.offsetParent
+
+  offset.left += element.offsetLeft
+  offset.top += element.offsetTop
+
+  while (current !== null) {
+    offset.left += current.offsetLeft
+    offset.top += current.offsetTop
+    current = current.offsetParent
+  }
+  return offset
+}
+
+</script>
 
   </div>
-
 </body>
 </html>
