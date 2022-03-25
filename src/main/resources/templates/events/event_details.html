@@ -53,6 +53,12 @@ zoom: 8
 var currentEvent = [[${event}]];
 	 const marker1 = new mapboxgl.Marker()
  	.setLngLat([currentEvent.venue.longitude, currentEvent.venue.latitude])
+ 	.setPopup(
+			new mapboxgl.Popup({ offset: 25 }) // add popups
+			.setHTML(
+`		<h3>${currentEvent.name}</h3><p>Starts at: ${currentEvent.time}</p>`
+		)
+		)
  	.addTo(map);
 
 
