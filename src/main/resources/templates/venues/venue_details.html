@@ -38,7 +38,7 @@
     </td>
     </div>
     
-  <h2>Upcoming Events</h2>
+  <h2>All Upcoming Events for <a th:href="@{/venues/{id}(id=${venue.id})}" th:text="${venue.name}"></a></h2>
   <table class="table table-striped table-hover">
     <thead>
     <tr>

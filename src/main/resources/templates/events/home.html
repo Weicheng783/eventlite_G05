@@ -29,7 +29,7 @@
         <td>
           <a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.name}"></a>
         </td>
-        <td th:text="${e.venue.name}">Event venue</td>
+        <td><a th:href="@{/venues/{id}(id=${e.venue.id})}" th:text="${e.venue.name}"></a></td>
         <td th:text="${e.date}">Event date</td>
         <td th:text="${e.time ?: '-'}">Event time</td>
       </tr>

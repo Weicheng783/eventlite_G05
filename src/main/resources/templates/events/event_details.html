@@ -20,6 +20,7 @@
     <p class="fas fa-map-marked-alt" th:text="' Description: ' + (${event.description} ?: 'No description given.')"></p>
     <br>
 
+	<div style="display:flex;">
     <p>
       <a class="btn btn-primary" role="button" th:href="@{/events}"><i class="fas fa-arrow-left" aria-hidden="true"></i> Events list</a>
     </p>
@@ -32,9 +33,10 @@
 
     <td>
       <form th:action="@{/events/{id}(id=${event.id})}" th:method="delete" sec:authorize="isAuthenticated()">
-         <button type="submit" class="btn btn-danger"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
+         <button type="submit" class="btn btn-danger" style="margin-left:25px;"><i class="fas fa-trash" aria-hidden="true"></i> Delete All Fields</button>
       </form>
     </td>
+    </div>
     
   <div id="indicator" style="margin-top:20px;"></div>
   <div id="map" style="position: absolute; top: 0px; width: 100%; height: 600px;  border-radius: 20px; "></div>
