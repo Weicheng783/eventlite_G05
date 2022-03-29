@@ -38,6 +38,17 @@
     </td>
     </div>
     
+    <h3>Share this event to Twitter</h3>
+    
+    <!--  <p><input th:placeholder="${event.name}" style="width:80%;"></input></p>
+    <button type="submit" >Send Tweet</button> -->
+   
+    <form th:action="@{/events/{id}(id=${event.id})}" th:object="${event}" th:method="post" sec:authorize="isAuthenticated()">
+     <p><input th:placeholder="${event.name}" style="width:80%;" th:field="*{tweet}"></input></p>
+     <button type="submit" class="btn btn-success" style="margin-left:0px;"><i class="fas" aria-hidden="true"></i>Send Tweet</button>
+    </form>
+    
+    
   <div id="indicator" style="margin-top:20px;"></div>
   <div id="map" style="position: absolute; top: 0px; width: 100%; height: 600px;  border-radius: 20px; "></div>
   <div id="placeholder" style="height:200px;"></div>

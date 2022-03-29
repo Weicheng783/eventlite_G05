@@ -96,4 +96,14 @@ public class Event {
 	public void setVenue(Venue venue) {
 		this.venue = venue;
 	}
+	
+	private String tweet;
+	
+	public String getTweet() {
+		return tweet;
+	}
+
+	public void setTweet(String tweet) {
+		this.tweet = tweet;
+	}
 }

@@ -18,6 +18,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.thymeleaf.util.ArrayUtils;
+
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
@@ -39,6 +45,27 @@ public class EventsController {
 
 	@Autowired
 	private VenueService venueService;
+	
+	@RequestMapping(value="/{id}" ,method=RequestMethod.POST)
+	public String createTweet(@RequestBody @Valid @ModelAttribute (value="tweet") Event event, 
+			BindingResult errors,@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		cb.setDebugEnabled(true)
+		.setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
+	    .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
+		.setOAuth2AccessToken("AAAAAAAAAAAAAAAAAAAAAFmjawEAAAAAs%2FR2PN9TUWDSkTFw3U4LVcmJ8VA%3DUTEzJcwI6Ta73FH8m5YSZ4orFRibDfYOMw2F0m2t3AmlxJWech")
+	  .setOAuthAccessToken("1508864560215863298-tNyoRaV2eCUc2xDQ9cqwAXGUaUOOf6")
+	  .setOAuthAccessTokenSecret("qz9bQxlyXCa2F7Py72UQxSqcVrmcLGw9MEKnKu6AmsnLP");
+		//		cb.setDebugEnabled(true)
+//		  .setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
+//		  .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
+
+		TwitterFactory tf = new TwitterFactory(cb.build());
+	    Twitter twitter = tf.getInstance();
+//	    System.out.println(event.getTweet());
+	    Status status = twitter.updateStatus(event.getTweet());
+	    return status.getText();
+	}
 
 	@ExceptionHandler(EventNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
@@ -51,7 +78,6 @@ public class EventsController {
 	@GetMapping("/{id}")
 	public String getEvent(@PathVariable("id") long id, Model model) {
 		Optional<Event> event = eventService.findById(id);
-		HttpHeaders headers = new HttpHeaders();
 		if (event.isEmpty()) {
 			log.info("Event not found");
 			throw new EventNotFoundException(id);
