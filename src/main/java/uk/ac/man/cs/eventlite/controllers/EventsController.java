@@ -177,54 +177,6 @@ public class EventsController {
 		return "events/index";
 	}
 
-	private static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-		List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
-		list.sort(Map.Entry.comparingByValue());
-
-		Map<K, V> result = new LinkedHashMap<>();
-		for (Map.Entry<K, V> entry : list) {
-			result.put(entry.getKey(), entry.getValue());
-		}
-
-		return result;
-	}
-
-	@RequestMapping(value = "/home", method = RequestMethod.GET)
-	public String getNext3EventsAndTop3Venues(Model model) {
-		ArrayList<Event> nextEvents = new ArrayList<Event>();
-		Map<Venue, Integer> topVenues = new HashMap<>();
-
-		LocalDate dateNow = LocalDate.now();
-		LocalTime timeNow = LocalTime.now();
-
-		for (Event event : eventService.findAllByOrderByDateAscNameAsc()) {
-			if (event.getDate() == null) {
-				continue;
-			}
-			if (dateNow.isBefore(event.getDate()) || (dateNow.isEqual(event.getDate()) && timeNow.isBefore(event.getTime()))) {
-				nextEvents.add(event);
-				topVenues.merge(event.getVenue(), 1, Integer::sum);
-			}
-		}
-
-		topVenues = sortByValue(topVenues);
-		ArrayList<Pair<Venue, Integer>> venueList = new ArrayList<>();
-		int c = 0;
-		for (Venue v : topVenues.keySet()) {
-			venueList.add(Pair.of(v, topVenues.get(v)));
-			c++;
-			if (c == 3) {
-				break;
-			}
-		}
-
-		model.addAttribute("nextEvents", nextEvents);
-		model.addAttribute("topVenues", venueList);
-
-		return "events/home";
-	}
-
-
 	@GetMapping("/new")
 	public String newEvent(Model model) {
 		if (!model.containsAttribute("event")) {
