@@ -52,11 +52,10 @@ public class EventsController {
 			BindingResult errors, Model model, RedirectAttributes redirectAttrs) throws TwitterException {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
-		.setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
-	    .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
-		.setOAuth2TokenURL("AAAAAAAAAAAAAAAAAAAAAFmjawEAAAAAs%2FR2PN9TUWDSkTFw3U4LVcmJ8VA%3DUTEzJcwI6Ta73FH8m5YSZ4orFRibDfYOMw2F0m2t3AmlxJWech")
-	  .setOAuthAccessToken("1508864560215863298-tNyoRaV2eCUc2xDQ9cqwAXGUaUOOf6")
-	  .setOAuthAccessTokenSecret("qz9bQxlyXCa2F7Py72UQxSqcVrmcLGw9MEKnKu6AmsnLP");
+		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
+	    .setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
+	    .setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
+	    .setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
 		//		cb.setDebugEnabled(true)
 //		  .setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
 //		  .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
@@ -64,8 +63,14 @@ public class EventsController {
 		TwitterFactory tf = new TwitterFactory(cb.build());
 	    Twitter twitter = tf.getInstance();
 //	    System.out.println(event.getTweet());
-	    Status status = twitter.updateStatus(event.getTweet());
-	    return status.getText();
+	    try {
+	    	Status status = twitter.updateStatus(event.getTweet());
+	    	redirectAttrs.addFlashAttribute("ok_message", "The Tweet has been pushed and posted. You can check Twitter now.");
+	    }catch(Exception e){
+	    	redirectAttrs.addFlashAttribute("error_message", "The Tweet has NOT been posted. Your exception is: " + e.toString());
+	    }
+	    
+	    return "redirect:/events/"+ event.getId();
 	}
 
 	@ExceptionHandler(EventNotFoundException.class)
