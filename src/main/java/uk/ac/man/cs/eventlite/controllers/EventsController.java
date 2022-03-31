@@ -65,7 +65,7 @@ public class EventsController {
 //	    System.out.println(event.getTweet());
 	    try {
 	    	Status status = twitter.updateStatus(event.getTweet());
-	    	redirectAttrs.addFlashAttribute("ok_message", "The Tweet has been pushed and posted. You can check Twitter now.");
+	    	redirectAttrs.addFlashAttribute("ok_message_Tweets", status.getText());
 	    }catch(Exception e){
 	    	redirectAttrs.addFlashAttribute("error_message", "The Tweet has NOT been posted. Your exception is: " + e.toString());
 	    }
