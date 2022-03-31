@@ -75,6 +75,38 @@ public class EventsController {
 		return "events/not_found";
 	}
 
+	public String getTweets(Model model) {
+		
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		cb.setDebugEnabled(true)
+		.setOAuthConsumerKey("")
+		.setOAuthConsumerSecret("")
+		.setOAuthAccessToken("")
+		.setOAuthAccessTokenSecret("");
+		TwitterFactory tf = new TwitterFactory(cb.build());
+		Twitter twitter = tf.getInstance();
+		
+		ArrayList<Status> tweetList = new ArrayList<Status>();
+		
+		try {
+			List<Status> statuses = twitter.getUserTimeline();
+			for (int i=0; i < statuses.size(); i++) {
+				if (i == 5 ) break;
+				tweetList.add(statuses.get(i));
+				
+				model.addAttribute("tweets", tweetList);
+			}
+			
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		return "events/index";
+	}
+	
 	@GetMapping("/{id}")
 	public String getEvent(@PathVariable("id") long id, Model model) {
 		Optional<Event> event = eventService.findById(id);
