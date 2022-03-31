@@ -34,6 +34,7 @@ import java.util.*;
 import java.time.*;
 import java.util.stream.Collectors;
 
+
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
 public class EventsController {
@@ -46,14 +47,14 @@ public class EventsController {
 	@Autowired
 	private VenueService venueService;
 	
-	@RequestMapping(value="/{id}" ,method=RequestMethod.POST)
+	@RequestMapping(value="/{tweet}" ,method=RequestMethod.POST)
 	public String createTweet(@RequestBody @Valid @ModelAttribute (value="tweet") Event event, 
-			BindingResult errors,@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+			BindingResult errors, Model model, RedirectAttributes redirectAttrs) throws TwitterException {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 		.setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
 	    .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
-		.setOAuth2AccessToken("AAAAAAAAAAAAAAAAAAAAAFmjawEAAAAAs%2FR2PN9TUWDSkTFw3U4LVcmJ8VA%3DUTEzJcwI6Ta73FH8m5YSZ4orFRibDfYOMw2F0m2t3AmlxJWech")
+		.setOAuth2TokenURL("AAAAAAAAAAAAAAAAAAAAAFmjawEAAAAAs%2FR2PN9TUWDSkTFw3U4LVcmJ8VA%3DUTEzJcwI6Ta73FH8m5YSZ4orFRibDfYOMw2F0m2t3AmlxJWech")
 	  .setOAuthAccessToken("1508864560215863298-tNyoRaV2eCUc2xDQ9cqwAXGUaUOOf6")
 	  .setOAuthAccessTokenSecret("qz9bQxlyXCa2F7Py72UQxSqcVrmcLGw9MEKnKu6AmsnLP");
 		//		cb.setDebugEnabled(true)
