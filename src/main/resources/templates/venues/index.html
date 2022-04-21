@@ -5,6 +5,11 @@
       layout:decorate="~{layouts/default}">
 <head>
   <title>All venues</title>
+  <script>
+    function clearSearch() {
+        window.location = "[[@{/venues}]]";
+    }
+  </script>
 </head>
 
 <body style="background-color: aliceblue;">
@@ -16,6 +21,7 @@
 		<div class="input-group pb-4">
 		  	<input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control" placeholder="Search venue by name..." />
 		  	<button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
+		  	<button type="button" class="btn btn-secondary" onclick="clearSearch()"><i class="fa fa-ban" aria-hidden="true"></i> Clear</button>
 		</div>
 	</form>
 	
@@ -56,4 +62,7 @@
 
 
 </div>
+
 </body>
+
+</html>
