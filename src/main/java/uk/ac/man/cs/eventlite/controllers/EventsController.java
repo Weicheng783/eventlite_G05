@@ -205,6 +205,7 @@ public class EventsController {
 
 		model.addAttribute("eventFuture", eventFuture);
 		model.addAttribute("eventPast", eventPast);
+		model.addAttribute("name", name);
 		
 		return "events/index";
 	}
