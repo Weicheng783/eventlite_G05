@@ -79,10 +79,10 @@ public class EventsController {
 		
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
-		.setOAuthConsumerKey("")
-		.setOAuthConsumerSecret("")
-		.setOAuthAccessToken("")
-		.setOAuthAccessTokenSecret("");
+		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
+		.setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
+		.setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
+		.setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		Twitter twitter = tf.getInstance();
 		
@@ -90,8 +90,7 @@ public class EventsController {
 		
 		try {
 			List<Status> statuses = twitter.getUserTimeline();
-			for (int i=0; i < statuses.size(); i++) {
-				if (i == 5 ) break;
+			for (int i=0; i < 5; i++) {
 				tweetList.add(statuses.get(i));
 				
 				model.addAttribute("tweets", tweetList);
