@@ -108,18 +108,18 @@
   
  <script th:inline="javascript">
  mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
- const map = new mapboxgl.Map({
+ var map = new mapboxgl.Map({
  container: 'map',
  style: 'mapbox://styles/mapbox/streets-v11',
  center: [-2.230912, 53.465211],
  zoom: 6
  });
  var futureEvents = [[${eventFuture}]];
- var markers = [];
  var coordinates = [];
  var loopTime = 0;
+ var bounds = new mapboxgl.LngLatBounds();
 for (var event of futureEvents){
-	 markers[loopTime] = new mapboxgl.Marker()
+	 var marker = new mapboxgl.Marker()
  	.setLngLat([event.venue.longitude, event.venue.latitude])
  	.setPopup(
 			new mapboxgl.Popup({ offset: 25 }) // add popups
@@ -128,11 +128,14 @@ for (var event of futureEvents){
 		)
 		)
  	.addTo(map);
-	 
 	 coordinates[loopTime] = [event.venue.longitude, event.venue.latitude];
-	 
 	 loopTime ++;
 }
+// Map zooming to fit all available points
+for (var i of coordinates){
+	bounds.extend(i);
+}
+map.fitBounds(bounds, { padding: 100 });
 
  var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
  document.getElementById("map").style.width = width+"px";
