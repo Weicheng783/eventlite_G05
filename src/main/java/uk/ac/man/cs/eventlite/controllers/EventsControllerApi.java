@@ -22,6 +22,8 @@ import javax.validation.Valid;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(value = "/api/events", produces = {MediaType.APPLICATION_JSON_VALUE, MediaTypes.HAL_JSON_VALUE})
 public class EventsControllerApi {
@@ -43,7 +45,12 @@ public class EventsControllerApi {
 
 	@GetMapping("/{id}")
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-		throw new EventNotFoundException(id);
+		if(!eventService.existsById(id)) {
+            throw new EventNotFoundException(id);
+        }
+		Optional<Event> event = eventService.findById(id);
+
+		return eventAssembler.toModel(event.get());
 	}
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
