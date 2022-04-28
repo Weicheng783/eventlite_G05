@@ -132,11 +132,12 @@ for (var event of futureEvents){
 	 loopTime ++;
 }
 // Map zooming to fit all available points
-for (var i of coordinates){
-	bounds.extend(i);
+if(coordinates.length != 0){
+	for (var i of coordinates){
+		bounds.extend(i);
+	}
+	map.fitBounds(bounds, { padding: 100 });
 }
-map.fitBounds(bounds, { padding: 100 });
-
  var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
  document.getElementById("map").style.width = width+"px";
  document.getElementById("map").style.top = getElementOffset(document.getElementById("indicator")).top + "px";
