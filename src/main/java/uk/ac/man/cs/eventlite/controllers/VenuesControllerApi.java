@@ -60,7 +60,8 @@ public class VenuesControllerApi {
         }
 		Optional<Venue> venue = venueService.findById(id);
 
-		return venueAssembler.toModel(venue.get());
+		return venueAssembler.toModel(venue.get())
+                .add(linkTo(methodOn(VenuesControllerApi.class).getVenueNext3Events(id)).withRel("next3events"));
 	}
 
     @GetMapping("/{id}/next3events")
@@ -75,8 +76,7 @@ public class VenuesControllerApi {
                 next3Events.add(e);
         });
 
-		return eventAssembler.toCollectionModel((Iterable<Event>)next3Events)
-                .add(linkTo(methodOn(VenuesControllerApi.class).getVenue(id)).withRel("next3Events"));
+		return eventAssembler.toCollectionModel((Iterable<Event>)next3Events);
 	}
 
     @GetMapping
