@@ -61,7 +61,7 @@ public class VenuesControllerApi {
 		Optional<Venue> venue = venueService.findById(id);
 
 		return venueAssembler.toModel(venue.get())
-                .add(linkTo(methodOn(VenuesControllerApi.class).getVenueNext3Events(id)).withRel("next3events"));
+                .add(linkTo(methodOn(VenuesControllerApi.class).getVenueEvents(id)).withRel("events")).add(linkTo(methodOn(VenuesControllerApi.class).getVenueNext3Events(id)).withRel("next3events"));
 	}
 
     @GetMapping("/{id}/next3events")
@@ -72,11 +72,26 @@ public class VenuesControllerApi {
 		Optional<Venue> venue = venueService.findById(id);
         ArrayList<Event> next3Events = new ArrayList<>();
         eventService.findAllByOrderByDateDescNameAsc().forEach(e -> {
-            if(e.getVenue() == venue.get())
+            if(e.getVenue() == venue.get() && next3Events.size() < 3)
                 next3Events.add(e);
         });
 
 		return eventAssembler.toCollectionModel((Iterable<Event>)next3Events);
+	}
+    
+    @GetMapping("/{id}/events")
+	public CollectionModel<EntityModel<Event>> getVenueEvents(@PathVariable("id") long id) {
+        if(!venueService.existsById(id)) {
+            throw new VenueNotFoundException(id);
+        }
+		Optional<Venue> venue = venueService.findById(id);
+        ArrayList<Event> Events = new ArrayList<>();
+        eventService.findAllByOrderByDateDescNameAsc().forEach(e -> {
+            if(e.getVenue() == venue.get())
+                Events.add(e);
+        });
+
+		return eventAssembler.toCollectionModel((Iterable<Event>)Events);
 	}
 
     @GetMapping
