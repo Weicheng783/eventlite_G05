@@ -119,7 +119,6 @@ public class EventsController {
 				eventPast.add(event);
 			}
 		}
-
 		
 		model.addAttribute("eventFuture", eventFuture);
 		model.addAttribute("eventPast", eventPast);
@@ -143,14 +142,25 @@ public class EventsController {
 	public String updateEvent(@RequestBody @Valid @ModelAttribute ("event") Event event,
 			BindingResult errors,@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
 		
+		Event eventUpdated;
+		
 		if (errors.hasErrors()) {
 			model.addAttribute("event", event);
 			model.addAttribute("venues", venueService.findAll());
 			redirectAttrs.addFlashAttribute("error_message", "This event has not been updated correctly, please check carefully the fields and try it again.");
-			return "events/update";
+			Event event1 = new Event();
+			Venue venue1 = new Venue();
+			event1.setDate(LocalDateTime.now().plusDays(1).toLocalDate());
+			event1.setDescription("some description...");
+			event1.setId(10);
+			event1.setName("Aevent");
+			event1.setTime(LocalTime.MIDNIGHT);
+			event1.setVenue(venue1);
+			eventUpdated = event1;
+		}else {
+			eventUpdated = eventService.findEventById(id).get();
 		}
-		
-		Event eventUpdated = eventService.findEventById(id).get();
+
 		eventUpdated.setName(event.getName());
 		eventUpdated.setDate(event.getDate());
 		eventUpdated.setTime(event.getTime());
