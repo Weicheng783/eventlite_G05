@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @RestController
@@ -38,7 +39,13 @@ public class VenuesControllerApi {
     private VenueService venueService;
 
     @Autowired
+    private EventService eventService;
+
+    @Autowired
     private VenueModelAssembler venueAssembler;
+
+    @Autowired
+    private EventModelAssembler eventAssembler;
 
     @ExceptionHandler(VenueNotFoundException.class)
     public ResponseEntity<?> venueNotFoundHandler(VenueNotFoundException ex) {
@@ -53,7 +60,38 @@ public class VenuesControllerApi {
         }
 		Optional<Venue> venue = venueService.findById(id);
 
-		return venueAssembler.toModel(venue.get());
+		return venueAssembler.toModel(venue.get())
+                .add(linkTo(methodOn(VenuesControllerApi.class).getVenueEvents(id)).withRel("events")).add(linkTo(methodOn(VenuesControllerApi.class).getVenueNext3Events(id)).withRel("next3events"));
+	}
+
+    @GetMapping("/{id}/next3events")
+	public CollectionModel<EntityModel<Event>> getVenueNext3Events(@PathVariable("id") long id) {
+        if(!venueService.existsById(id)) {
+            throw new VenueNotFoundException(id);
+        }
+		Optional<Venue> venue = venueService.findById(id);
+        ArrayList<Event> next3Events = new ArrayList<>();
+        eventService.findAllByOrderByDateDescNameAsc().forEach(e -> {
+            if(e.getVenue() == venue.get() && next3Events.size() < 3)
+                next3Events.add(e);
+        });
+
+		return eventAssembler.toCollectionModel((Iterable<Event>)next3Events);
+	}
+    
+    @GetMapping("/{id}/events")
+	public CollectionModel<EntityModel<Event>> getVenueEvents(@PathVariable("id") long id) {
+        if(!venueService.existsById(id)) {
+            throw new VenueNotFoundException(id);
+        }
+		Optional<Venue> venue = venueService.findById(id);
+        ArrayList<Event> Events = new ArrayList<>();
+        eventService.findAllByOrderByDateDescNameAsc().forEach(e -> {
+            if(e.getVenue() == venue.get())
+                Events.add(e);
+        });
+
+		return eventAssembler.toCollectionModel((Iterable<Event>)Events);
 	}
 
     @GetMapping
