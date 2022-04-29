@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -97,7 +98,7 @@ public class VenuesControllerApi {
     @GetMapping
     public CollectionModel<EntityModel<Venue>> getAllVenues() {
         return venueAssembler.toCollectionModel(venueService.findAll())
-                .add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel());
+                .add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel()).add(new Link("http://localhost:8080/api/profile/venues").withRel("profile"));
     }
 
 //    @RequestMapping(name = "/search", method = RequestMethod.GET)
