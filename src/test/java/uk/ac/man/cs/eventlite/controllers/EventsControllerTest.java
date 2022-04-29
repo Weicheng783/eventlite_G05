@@ -12,6 +12,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
 
@@ -190,6 +191,20 @@ public class EventsControllerTest {
 
 
 			verify(eventService, never()).save(event);
+		}
+		
+		// Test posting an event all right
+		@Test
+		public void postingEventSuccessful() throws Exception {
+			mvc.perform(MockMvcRequestBuilders.post("/events").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+					.with(user("Markel").roles(Security.ADMIN_ROLE))
+					.param("name", "Event")
+					.param("id", "10")
+					.param("date", LocalDateTime.now().plusDays(1).toString())
+					.param("time", "00:00")
+					.param("Venue_id", "10")
+					.param("description", "This event is...")
+					.accept(MediaType.TEXT_HTML).with(csrf())).andExpect(status().isOk());
 		}
 		
 		@Test
