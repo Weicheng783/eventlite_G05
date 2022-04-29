@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
 import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.config.Security;
+import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
@@ -49,7 +50,13 @@ public class VenuesControllerApiTest {
 
 	@MockBean
 	private VenueService venueService;
+	
+	@MockBean
+	private EventService eventService;
 
+	@MockBean
+    private EventModelAssembler eventAssembler;
+	
 	@Test
 	public void getIndexWhenNoVenues() throws Exception {
 		
