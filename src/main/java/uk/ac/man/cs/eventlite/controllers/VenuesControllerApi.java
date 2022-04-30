@@ -36,14 +36,12 @@ public class VenuesControllerApi {
 
     private static final String NOT_FOUND_MSG = "{ \"error\": \"%s\", \"id\": %d }";
 
-    @Autowired
-    private VenueService venueService;
+    @Autowired VenueService venueService;
 
     @Autowired
     private EventService eventService;
 
-    @Autowired
-    private VenueModelAssembler venueAssembler;
+    @Autowired VenueModelAssembler venueAssembler;
 
     @Autowired
     private EventModelAssembler eventAssembler;
@@ -59,11 +57,16 @@ public class VenuesControllerApi {
         if(!venueService.existsById(id)) {
             throw new VenueNotFoundException(id);
         }
-		Optional<Venue> venue = venueService.findById(id);
-
-		return venueAssembler.toModel(venue.get())
+        
+        Optional<Venue> venue;
+        venue = venueService.findById(id);
+        try {
+        	return venueAssembler.toModel(venue.get())
                 .add(linkTo(methodOn(VenuesControllerApi.class).getVenueEvents(id)).withRel("events")).add(linkTo(methodOn(VenuesControllerApi.class).getVenueNext3Events(id)).withRel("next3events"));
-	}
+        } catch(Exception e) {
+        	return null;
+        }
+    }
 
     @GetMapping("/{id}/next3events")
 	public CollectionModel<EntityModel<Event>> getVenueNext3Events(@PathVariable("id") long id) {
@@ -120,9 +123,16 @@ public class VenuesControllerApi {
         }
 
         Venue newVenue = venueService.save(venue);
-        EntityModel<Venue> entity = venueAssembler.toModel(newVenue);
-
-        return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        EntityModel<Venue> entity = null;
+        if(venueAssembler.toModel(newVenue) != null) {
+        	entity = venueAssembler.toModel(newVenue);
+        }
+        
+        try {
+        	return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        } catch (Exception e) {
+        	return ResponseEntity.unprocessableEntity().build();
+        }
     }
     
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
@@ -130,8 +140,6 @@ public class VenuesControllerApi {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
-
-		venueService.findById(id).orElseThrow();
 		venueService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

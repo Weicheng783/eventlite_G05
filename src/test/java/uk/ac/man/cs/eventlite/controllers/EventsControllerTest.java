@@ -88,6 +88,9 @@ public class EventsControllerTest {
 
 	@Mock
 	private Venue venue;
+	
+	@Mock
+	private Model model;
 
 	@MockBean
 	private EventService eventService;
@@ -280,6 +283,12 @@ public class EventsControllerTest {
 			// TODO: Needs more work
 		    EventsController eventcontrol = new EventsController();
 //		    eventcontrol.createEvent(event, null, null, null)
+		}
+		
+		@Test
+		public void setTweet() throws Exception {
+			Event event = new Event();
+			event.setTweet("tweets!");
 		}
 	
 		@Test

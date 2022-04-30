@@ -34,11 +34,9 @@ public class EventsControllerApi {
 
     private static final String NOT_FOUND_MSG = "{ \"error\": \"%s\", \"id\": %d }";
 
-    @Autowired
-    private EventService eventService;
+    @Autowired EventService eventService;
 
-    @Autowired
-    private EventModelAssembler eventAssembler;
+    @Autowired EventModelAssembler eventAssembler;
     
     @Autowired
     private VenueModelAssembler venueAssembler;
@@ -56,8 +54,11 @@ public class EventsControllerApi {
             throw new EventNotFoundException(id);
         }
 		Optional<Event> event = eventService.findById(id);
-
-		return eventAssembler.toModel(event.get()).add(linkTo(methodOn(EventsControllerApi.class).getEventVenue(id)).withRel("venue"));
+		try {
+			return eventAssembler.toModel(event.get()).add(linkTo(methodOn(EventsControllerApi.class).getEventVenue(id)).withRel("venue"));
+		}catch (Exception e) {
+			return null;
+		}
 	}
 	
 	@GetMapping("/{id}/venue")
@@ -66,7 +67,12 @@ public class EventsControllerApi {
             throw new EventNotFoundException(id);
         }
 		Optional<Event> e = eventService.findById(id);
-		Venue venue = e.get().getVenue();
+		Venue venue = null;
+		try {
+			venue = e.get().getVenue();
+		}catch(Exception ee) {
+			venue = null;
+		}
 		return venueAssembler.toModel(venue);
 	}
 	
@@ -76,8 +82,6 @@ public class EventsControllerApi {
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
 		}
-
-		eventService.findById(id).orElseThrow();
 		eventService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
@@ -113,8 +117,15 @@ public class EventsControllerApi {
         }
 
         Event newEvent = eventService.save(event);
-        EntityModel<Event> entity = eventAssembler.toModel(newEvent);
-
-        return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        EntityModel<Event> entity = null;
+        if(eventAssembler.toModel(newEvent) != null) {
+        	entity = eventAssembler.toModel(newEvent);
+        }
+        
+        try {
+        	return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        } catch (Exception e) {
+        	return ResponseEntity.unprocessableEntity().build();
+        }
     }
 }
