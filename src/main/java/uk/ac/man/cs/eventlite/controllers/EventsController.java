@@ -1,14 +1,10 @@
 package uk.ac.man.cs.eventlite.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -16,8 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import org.thymeleaf.util.ArrayUtils;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -32,7 +26,6 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.util.*;
 import java.time.*;
-import java.util.stream.Collectors;
 
 
 @Controller
@@ -47,30 +40,52 @@ public class EventsController {
 	@Autowired
 	private VenueService venueService;
 	
-	@RequestMapping(value="/{tweet}" ,method=RequestMethod.POST)
-	public String createTweet(@RequestBody @Valid @ModelAttribute (value="tweet") Event event, 
-			BindingResult errors, Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+//	@RequestMapping(value="/{tweet}" ,method=RequestMethod.POST)
+//	public String createTweet(@RequestBody @Valid @ModelAttribute (value="tweet") Event event, 
+//			BindingResult errors, Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+//		ConfigurationBuilder cb = new ConfigurationBuilder();
+//		cb.setDebugEnabled(true)
+//		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
+//	    .setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
+//	    .setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
+//	    .setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
+//		//		cb.setDebugEnabled(true)
+////		  .setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
+////		  .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
+//
+//		TwitterFactory tf = new TwitterFactory(cb.build());
+//	    Twitter twitter = tf.getInstance();
+////	    System.out.println(event.getTweet());
+//	    try {
+//	    	Status status = twitter.updateStatus(event.getTweet());
+//	    	redirectAttrs.addFlashAttribute("ok_message_Tweets", status.getText());
+//	    }catch(Exception e){
+//	    	redirectAttrs.addFlashAttribute("error_message", "The Tweet has NOT been posted. Your exception is: " + e.toString());
+//	    }
+//	    
+//	    return "redirect:/events/"+ event.getId();
+//	}
+	
+	@RequestMapping(value="/tweet" ,method=RequestMethod.GET)
+	public String createTweet(@RequestParam("eventId") String eventId, @RequestParam("tweet") String tweet, 
+			Model model, RedirectAttributes redirectAttrs) throws TwitterException {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
 	    .setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
 	    .setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
 	    .setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
-		//		cb.setDebugEnabled(true)
-//		  .setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
-//		  .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
 
 		TwitterFactory tf = new TwitterFactory(cb.build());
 	    Twitter twitter = tf.getInstance();
-//	    System.out.println(event.getTweet());
 	    try {
-	    	Status status = twitter.updateStatus(event.getTweet());
+	    	Status status = twitter.updateStatus(tweet);
 	    	redirectAttrs.addFlashAttribute("ok_message_Tweets", status.getText());
 	    }catch(Exception e){
 	    	redirectAttrs.addFlashAttribute("error_message", "The Tweet has NOT been posted. Your exception is: " + e.toString());
 	    }
 	    
-	    return "redirect:/events/"+ event.getId();
+	    return "redirect:/events/"+ eventId;
 	}
 
 	@ExceptionHandler(EventNotFoundException.class)
