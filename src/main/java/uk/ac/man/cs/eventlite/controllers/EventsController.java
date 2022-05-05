@@ -84,7 +84,7 @@ public class EventsController {
 	    }catch(Exception e){
 	    	redirectAttrs.addFlashAttribute("error_message", "The Tweet has NOT been posted. Your exception is: " + e.toString());
 	    }
-	    
+
 	    return "redirect:/events/"+ eventId;
 	}
 
@@ -229,7 +229,6 @@ public class EventsController {
 
 		model.addAttribute("eventFuture", eventFuture);
 		model.addAttribute("eventPast", eventPast);
-		model.addAttribute("name", name);
 		
 		return "events/index";
 	}

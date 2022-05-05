@@ -137,25 +137,25 @@ public class VenuesController {
 			.query(venue.getRoadName() + " " + venue.getPostcode())
 			.build();
 
-		try {
-			Thread.sleep(1000L);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 
 		
 		mapboxGeocoding.enqueueCall(new Callback<GeocodingResponse>() {
 			@Override
 			public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-			
+
+				assert response.body() != null;
 				List<CarmenFeature> results = response.body().features();
 			
 				if (results.size() > 0) {
 					// Log the first results Point.
 					Point firstResultPoint = results.get(0).center();
+					assert firstResultPoint != null;
 					log.info("onResponse: " + firstResultPoint.toString());
 					venue.setLatitude(firstResultPoint.latitude());
 					venue.setLongitude(firstResultPoint.longitude());
+
+					venueService.save(venue);
+					redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
 				} else {
 					// No result for your request were found.
 					log.error("onResponse: No result found");
@@ -167,10 +167,14 @@ public class VenuesController {
 				throwable.printStackTrace();
 			}
 		});
-		
-		venueService.save(venue);
-		redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
-		
+
+
+		try {
+			Thread.sleep(1000L);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 		return "redirect:/venues";
 	}
 	
