@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -26,6 +27,7 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.*;
 
 @Controller
@@ -39,19 +41,27 @@ public class EventsController {
 
 	@Autowired
 	private VenueService venueService;
-	
-	@RequestMapping(value="/tweet" ,method=RequestMethod.GET)
-	public String createTweet(@RequestParam("eventId") String eventId, @RequestParam("tweet") String tweet, 
-			Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+
+	public Twitter getTwitterObject() {
+		
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
-		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
-	    .setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
-	    .setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
-	    .setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
+		.setOAuthConsumerKey("VSFHFyXd2LoeXcpCNjqlVDmrV")
+	    .setOAuthConsumerSecret("hQdlQWtiOv3qxPEGBxmGkgWR9F4feYyoekaTFxizkizSauZZrN")
+	    .setOAuthAccessToken("1509559619764559877-f1iI2Grdrqa1RrVgbkyA7Hci89l4W9")
+	    .setOAuthAccessTokenSecret("qbM1YLv2rSIzRLTf30EhQnAWOqa7NCCIa3U5rwSCaGmUH");
 
 		TwitterFactory tf = new TwitterFactory(cb.build());
 	    Twitter twitter = tf.getInstance();
+		
+		return twitter;
+	}
+
+	@RequestMapping(value="/tweet" ,method=RequestMethod.GET)
+	public String createTweet(@RequestParam("eventId") String eventId, @RequestParam("tweet") String tweet, 
+			Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+
+		Twitter twitter = getTwitterObject();
 	    try {
 	    	Status status = twitter.updateStatus(tweet);
 	    	redirectAttrs.addFlashAttribute("ok_message_Tweets", status.getText());
@@ -59,8 +69,7 @@ public class EventsController {
 	    	redirectAttrs.addFlashAttribute("error_message", "The Tweet has NOT been posted. Your exception is: " + e.toString());
 	    }
 
-	    return "redirect:/events/"+ eventId;
-	    
+	    return "redirect:/events/"+ eventId;   
 	}
 
 	@ExceptionHandler(EventNotFoundException.class)
@@ -69,36 +78,6 @@ public class EventsController {
 		model.addAttribute("not_found_id", ex.getId());
 
 		return "events/not_found";
-	}
-
-	public String getTweets(Model model) {
-		
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true)
-		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
-		.setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
-		.setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
-		.setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
-		TwitterFactory tf = new TwitterFactory(cb.build());
-		Twitter twitter = tf.getInstance();
-		
-		ResponseList<Status> tweetList;
-		Map<String, String> timeline = new LinkedHashMap<String, String>();
-		
-		try {
-			tweetList = twitter.getUserTimeline(5);
-			for (Status tweet : tweetList) {
-				timeline.put(tweet.getCreatedAt().toString(), tweet.getText());
-			}
-		} catch (TwitterException e) {
-			// TODO Auto-generated catch block
-			timeline = null;
-			e.printStackTrace();
-		}
-		
-		model.addAttribute("tweets", timeline);
-		
-		return "events/index";
 	}
 	
 	@GetMapping("/{id}")
@@ -144,10 +123,27 @@ public class EventsController {
 		model.addAttribute("eventPast", eventPast);
 
 		// model.addAttribute("events", eventService.findAll());
+		
+		// Twitter Getting Latest Five Status
+		Twitter twitter = getTwitterObject();
+		ResponseList<Status> tweetList;
+		List<Status> tweetReadyList;
+
+		try {
+			tweetList = twitter.getUserTimeline();
+			if(tweetList.size() <= 5) {
+				tweetReadyList = tweetList.subList(0, tweetList.size());
+			}else {
+				tweetReadyList = tweetList.subList(0, 5);
+			}
+			model.addAttribute("tweets", tweetReadyList);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
 
 		return "events/index";
 	}
-	
+
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
 	public String getEventToUpdate(Model model, @PathVariable Long id) {
 		Event event = eventService.findById(id).get();
