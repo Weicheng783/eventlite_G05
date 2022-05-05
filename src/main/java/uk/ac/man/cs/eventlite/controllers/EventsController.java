@@ -150,7 +150,7 @@ public class EventsController {
 	
 	@RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
 	public String getEventToUpdate(Model model, @PathVariable Long id) {
-		Event event = eventService.findEventById(id).get();
+		Event event = eventService.findById(id).get();
 
 		model.addAttribute("event", event);
 		model.addAttribute("venues", venueService.findAll());

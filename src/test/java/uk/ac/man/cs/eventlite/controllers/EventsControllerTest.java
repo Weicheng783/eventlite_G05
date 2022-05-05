@@ -275,6 +275,27 @@ public class EventsControllerTest {
 		}
 		
 		@Test
+		public void getEventToUpdateTest() throws Exception{
+			//			Long id = 1;
+			Event event1 = new Event();
+			Venue venue1 = new Venue();
+			event1.setDate(LocalDateTime.now().plusDays(1).toLocalDate());
+			event1.setDescription("some description...");
+			event1.setId(1);
+			event1.setName("Aevent");
+			event1.setTime(LocalTime.MIDNIGHT);
+			event1.setVenue(venue1);
+			when(eventService.findById(1)).thenReturn(Optional.of(event1));
+//			when(eventService.findEventById((long)1).get()).thenReturn(event1);
+			
+			
+			
+			mvc.perform(get("/events/update/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML))
+					.andExpect(status().isOk())
+					.andExpect(view().name("events/update")).andExpect(handler().methodName("getEventToUpdate"));
+		}
+		
+		@Test
 		public void getAllEvents() throws Exception {
 			// TODO: Needs more work
 		    EventsController eventcontrol = new EventsController();
