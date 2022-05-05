@@ -13,14 +13,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
+import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.dao.EventService;
 import uk.ac.man.cs.eventlite.entities.Event;
+import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 import javax.validation.Valid;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/events", produces = {MediaType.APPLICATION_JSON_VALUE, MediaTypes.HAL_JSON_VALUE})
@@ -28,11 +34,12 @@ public class EventsControllerApi {
 
     private static final String NOT_FOUND_MSG = "{ \"error\": \"%s\", \"id\": %d }";
 
-    @Autowired
-    private EventService eventService;
+    @Autowired EventService eventService;
 
+    @Autowired EventModelAssembler eventAssembler;
+    
     @Autowired
-    private EventModelAssembler eventAssembler;
+    private VenueModelAssembler venueAssembler;
 
     @ExceptionHandler(EventNotFoundException.class)
     public ResponseEntity<?> eventNotFoundHandler(EventNotFoundException ex) {
@@ -43,16 +50,38 @@ public class EventsControllerApi {
 
 	@GetMapping("/{id}")
 	public EntityModel<Event> getEvent(@PathVariable("id") long id) {
-		throw new EventNotFoundException(id);
+		if(!eventService.existsById(id)) {
+            throw new EventNotFoundException(id);
+        }
+		Optional<Event> event = eventService.findById(id);
+		try {
+			return eventAssembler.toModel(event.get()).add(linkTo(methodOn(EventsControllerApi.class).getEventVenue(id)).withRel("venue"));
+		}catch (Exception e) {
+			return null;
+		}
 	}
+	
+	@GetMapping("/{id}/venue")
+	public EntityModel<Venue> getEventVenue(@PathVariable("id") long id) {
+		if(!eventService.existsById(id)) {
+            throw new EventNotFoundException(id);
+        }
+		Optional<Event> e = eventService.findById(id);
+		Venue venue = null;
+		try {
+			venue = e.get().getVenue();
+		}catch(Exception ee) {
+			venue = null;
+		}
+		return venueAssembler.toModel(venue);
+	}
+	
 	
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
 	public ResponseEntity<?> deleteEvent(@PathVariable("id") long id){
 		if (!eventService.existsById(id)) {
 			throw new EventNotFoundException(id);
 		}
-
-		eventService.findById(id).orElseThrow();
 		eventService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
@@ -88,8 +117,15 @@ public class EventsControllerApi {
         }
 
         Event newEvent = eventService.save(event);
-        EntityModel<Event> entity = eventAssembler.toModel(newEvent);
-
-        return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        EntityModel<Event> entity = null;
+        if(eventAssembler.toModel(newEvent) != null) {
+        	entity = eventAssembler.toModel(newEvent);
+        }
+        
+        try {
+        	return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        } catch (Exception e) {
+        	return ResponseEntity.unprocessableEntity().build();
+        }
     }
 }

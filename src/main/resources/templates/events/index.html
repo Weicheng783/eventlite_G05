@@ -12,10 +12,17 @@
 
   <form action="/events/search" method="get">
     <div class="input-group pb-4">
+<<<<<<< HEAD
       <div class="form-outline">
         <input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control" placeholder="Search event by name..."/>
       </div>
       <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+=======
+        <input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control"
+               placeholder="Search event by name..."/>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
+	    <button type="button" class="btn btn-secondary" onclick="clearSearch()"><i class="fa fa-ban" aria-hidden="true"></i> Clear</button>
+>>>>>>> refs/remotes/origin/main
     </div>
   </form>
 
@@ -125,18 +132,18 @@
   
  <script th:inline="javascript">
  mapboxgl.accessToken = 'pk.eyJ1IjoiZGludWQxMSIsImEiOiJjbDE1Nzdib3QwaDJ6M2pzZ2p4bGdhZWo2In0.pNx1qRgo7vsmuoVt0R5-nQ';
- const map = new mapboxgl.Map({
+ var map = new mapboxgl.Map({
  container: 'map',
  style: 'mapbox://styles/mapbox/streets-v11',
  center: [-2.230912, 53.465211],
  zoom: 6
  });
  var futureEvents = [[${eventFuture}]];
- var markers = [];
  var coordinates = [];
  var loopTime = 0;
+ var bounds = new mapboxgl.LngLatBounds();
 for (var event of futureEvents){
-	 markers[loopTime] = new mapboxgl.Marker()
+	 var marker = new mapboxgl.Marker()
  	.setLngLat([event.venue.longitude, event.venue.latitude])
  	.setPopup(
 			new mapboxgl.Popup({ offset: 25 }) // add popups
@@ -145,12 +152,16 @@ for (var event of futureEvents){
 		)
 		)
  	.addTo(map);
-	 
 	 coordinates[loopTime] = [event.venue.longitude, event.venue.latitude];
-	 
 	 loopTime ++;
 }
-
+// Map zooming to fit all available points
+if(coordinates.length != 0){
+	for (var i of coordinates){
+		bounds.extend(i);
+	}
+	map.fitBounds(bounds, { padding: 100 });
+}
  var width = document.body.offsetWidth - getElementOffset(document.getElementById("map")).left*2; 
  document.getElementById("map").style.width = width+"px";
  document.getElementById("map").style.top = getElementOffset(document.getElementById("indicator")).top + "px";
@@ -178,8 +189,13 @@ for (var event of futureEvents){
    }
    return offset
  }
-     
 
+</script>
+
+<script type="text/javascript">
+    function clearSearch() {
+        window.location = "[[@{/events}]]";
+    }
 </script>
 </div>
  

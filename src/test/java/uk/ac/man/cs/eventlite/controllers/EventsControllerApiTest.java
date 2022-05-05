@@ -21,19 +21,26 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindingResult;
 
 import uk.ac.man.cs.eventlite.assemblers.EventModelAssembler;
+import uk.ac.man.cs.eventlite.assemblers.VenueModelAssembler;
 import uk.ac.man.cs.eventlite.config.Security;
 import uk.ac.man.cs.eventlite.dao.EventService;
+import uk.ac.man.cs.eventlite.dao.VenueService;
 import uk.ac.man.cs.eventlite.entities.Event;
 import uk.ac.man.cs.eventlite.entities.Venue;
+import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
+import uk.ac.man.cs.eventlite.exceptions.VenueNotFoundException;
 
 import static org.mockito.Mockito.never;
 
@@ -44,10 +51,83 @@ public class EventsControllerApiTest {
 
 	@Autowired
 	private MockMvc mvc;
+	
+	@Mock
+	private Event event;
+	
+	@Mock
+	private BindingResult br;
 
 	@MockBean
 	private EventService eventService;
+	
+	@MockBean
+	private VenueService venueService;
 
+	@MockBean
+    private VenueModelAssembler venueAssembler;
+	
+	@Mock
+    private EventModelAssembler eventAssembler;
+
+	@Test
+	public void newEvent() throws Exception {
+		mvc.perform(get("/api/events/new").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotAcceptable())
+		.andExpect(handler().methodName("newEvent"));
+	}
+	
+	@Test
+	public void createEventNotAccept() throws Exception {
+		EventsControllerApi vapi = new EventsControllerApi();
+		vapi.eventService = eventService;
+		vapi.eventAssembler = eventAssembler;
+		vapi.createEvent(event, br);
+	}
+	
+	@Test
+	public void createEventNotSuccess() throws Exception {
+		when(br.hasErrors()).thenReturn(true);
+		EventsControllerApi vapi = new EventsControllerApi();
+		vapi.eventService = eventService;
+		vapi.eventAssembler = eventAssembler;
+
+		ResponseEntity<?> e = vapi.createEvent(event, br);
+		e.equals(ResponseEntity.unprocessableEntity().build());
+	}
+	
+	@Test
+	public void getEventSuccess() throws Exception {
+		when(eventService.existsById(99)).thenReturn(true);
+		mvc.perform(get("/api/events/99").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(handler().methodName("getEvent"));
+	}
+	
+	@Test
+	public void getEventVenueSuccess() throws Exception {
+		when(eventService.existsById(99)).thenReturn(true);
+		mvc.perform(get("/api/events/99/venue").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(handler().methodName("getEventVenue"));
+	}
+	
+	@Test
+	public void deleteEventNotExists() throws Exception {
+		when(eventService.existsById(0)).thenReturn(false);
+		EventsControllerApi vapi = new EventsControllerApi();
+		vapi.eventService = eventService;
+		EventNotFoundException es = new EventNotFoundException(0);
+		try {
+			vapi.deleteEvent(0);
+		} catch (Exception e) {e.equals(es);}
+	}
+	
+	@Test
+	public void deleteVenueSuccess() throws Exception {
+		when(eventService.existsById(0)).thenReturn(true);
+		EventsControllerApi vapi = new EventsControllerApi();
+		vapi.eventService = eventService;
+		vapi.deleteEvent(0);
+	}
+	
 	@Test
 	public void getIndexWhenNoEvents() throws Exception {
 		when(eventService.findAll()).thenReturn(Collections.<Event>emptyList());

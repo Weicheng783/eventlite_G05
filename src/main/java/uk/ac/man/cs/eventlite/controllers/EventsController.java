@@ -1,14 +1,10 @@
 package uk.ac.man.cs.eventlite.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -16,8 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import org.thymeleaf.util.ArrayUtils;
 
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -33,7 +27,6 @@ import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.util.*;
 import java.time.*;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping(value = "/events", produces = { MediaType.TEXT_HTML_VALUE })
@@ -47,25 +40,27 @@ public class EventsController {
 	@Autowired
 	private VenueService venueService;
 	
-	@RequestMapping(value="/{id}" ,method=RequestMethod.POST)
-	public String createTweet(@RequestBody @Valid @ModelAttribute (value="tweet") Event event, 
-			BindingResult errors,@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+	@RequestMapping(value="/tweet" ,method=RequestMethod.GET)
+	public String createTweet(@RequestParam("eventId") String eventId, @RequestParam("tweet") String tweet, 
+			Model model, RedirectAttributes redirectAttrs) throws TwitterException {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
-		.setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
-	    .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
-		.setOAuth2AccessToken("AAAAAAAAAAAAAAAAAAAAAFmjawEAAAAAs%2FR2PN9TUWDSkTFw3U4LVcmJ8VA%3DUTEzJcwI6Ta73FH8m5YSZ4orFRibDfYOMw2F0m2t3AmlxJWech")
-	  .setOAuthAccessToken("1508864560215863298-tNyoRaV2eCUc2xDQ9cqwAXGUaUOOf6")
-	  .setOAuthAccessTokenSecret("qz9bQxlyXCa2F7Py72UQxSqcVrmcLGw9MEKnKu6AmsnLP");
-		//		cb.setDebugEnabled(true)
-//		  .setOAuthConsumerKey("MjkcPIFEa9tZTWwWrZahecT7Z")
-//		  .setOAuthConsumerSecret("b55sIvf0uR5RG5BcMo6tuduVwFZC3KAQfSYo69gDCsIXyt6VEq")
+		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
+	    .setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
+	    .setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
+	    .setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
 
 		TwitterFactory tf = new TwitterFactory(cb.build());
 	    Twitter twitter = tf.getInstance();
-//	    System.out.println(event.getTweet());
-	    Status status = twitter.updateStatus(event.getTweet());
-	    return status.getText();
+	    try {
+	    	Status status = twitter.updateStatus(tweet);
+	    	redirectAttrs.addFlashAttribute("ok_message_Tweets", status.getText());
+	    }catch(Exception e){
+	    	redirectAttrs.addFlashAttribute("error_message", "The Tweet has NOT been posted. Your exception is: " + e.toString());
+	    }
+	    
+	    return "redirect:/events/"+ eventId;
+	    
 	}
 
 	@ExceptionHandler(EventNotFoundException.class)
@@ -144,7 +139,6 @@ public class EventsController {
 				eventPast.add(event);
 			}
 		}
-
 		
 		model.addAttribute("eventFuture", eventFuture);
 		model.addAttribute("eventPast", eventPast);
@@ -168,21 +162,31 @@ public class EventsController {
 	public String updateEvent(@RequestBody @Valid @ModelAttribute ("event") Event event,
 			BindingResult errors,@PathVariable Long id, Model model, RedirectAttributes redirectAttrs) {
 		
+		Event eventUpdated;
+		
 		if (errors.hasErrors()) {
 			model.addAttribute("event", event);
 			model.addAttribute("venues", venueService.findAll());
 			redirectAttrs.addFlashAttribute("error_message", "This event has not been updated correctly, please check carefully the fields and try it again.");
-			return "events/update";
-		}
-		
-		Event eventUpdated = eventService.findEventById(id).get();
-		eventUpdated.setName(event.getName());
-		eventUpdated.setDate(event.getDate());
-		eventUpdated.setTime(event.getTime());
-		eventUpdated.setVenue(event.getVenue());
+			Event event1 = new Event();
+			Venue venue1 = new Venue();
+			event1.setDate(LocalDateTime.now().plusDays(1).toLocalDate());
+			event1.setDescription("some description...");
+			event1.setId(10);
+			event1.setName("Aevent");
+			event1.setTime(LocalTime.MIDNIGHT);
+			event1.setVenue(venue1);
+			eventUpdated = event1;
+		}else {
+			eventUpdated = eventService.findEventById(id).get();
+			eventUpdated.setName(event.getName());
+			eventUpdated.setDate(event.getDate());
+			eventUpdated.setTime(event.getTime());
+			eventUpdated.setVenue(event.getVenue());
 
-		eventService.save(eventUpdated);
-		redirectAttrs.addFlashAttribute("ok_message", "The event has been updated.");
+			eventService.save(eventUpdated);
+			redirectAttrs.addFlashAttribute("ok_message", "The event has been updated.");
+		}
 		
 		return "redirect:/events";
 	}
@@ -230,6 +234,7 @@ public class EventsController {
 
 		model.addAttribute("eventFuture", eventFuture);
 		model.addAttribute("eventPast", eventPast);
+		model.addAttribute("name", name);
 		
 		return "events/index";
 	}

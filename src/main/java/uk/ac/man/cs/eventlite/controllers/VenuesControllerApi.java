@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,17 +27,24 @@ import javax.validation.Valid;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.ArrayList;
+import java.util.Optional;
+
 @RestController
 @RequestMapping(value = "/api/venues", produces = {MediaType.APPLICATION_JSON_VALUE, MediaTypes.HAL_JSON_VALUE})
 public class VenuesControllerApi {
 
     private static final String NOT_FOUND_MSG = "{ \"error\": \"%s\", \"id\": %d }";
 
-    @Autowired
-    private VenueService venueService;
+    @Autowired VenueService venueService;
 
     @Autowired
-    private VenueModelAssembler venueAssembler;
+    private EventService eventService;
+
+    @Autowired VenueModelAssembler venueAssembler;
+
+    @Autowired
+    private EventModelAssembler eventAssembler;
 
     @ExceptionHandler(VenueNotFoundException.class)
     public ResponseEntity<?> venueNotFoundHandler(VenueNotFoundException ex) {
@@ -45,14 +53,55 @@ public class VenuesControllerApi {
     }
 
 	@GetMapping("/{id}")
-	public EntityModel<Event> getVenue(@PathVariable("id") long id) {
-		throw new VenueNotFoundException(id);
+	public EntityModel<Venue> getVenue(@PathVariable("id") long id) {
+        if(!venueService.existsById(id)) {
+            throw new VenueNotFoundException(id);
+        }
+        
+        Optional<Venue> venue;
+        venue = venueService.findById(id);
+        try {
+        	return venueAssembler.toModel(venue.get())
+                .add(linkTo(methodOn(VenuesControllerApi.class).getVenueEvents(id)).withRel("events")).add(linkTo(methodOn(VenuesControllerApi.class).getVenueNext3Events(id)).withRel("next3events"));
+        } catch(Exception e) {
+        	return null;
+        }
+    }
+
+    @GetMapping("/{id}/next3events")
+	public CollectionModel<EntityModel<Event>> getVenueNext3Events(@PathVariable("id") long id) {
+        if(!venueService.existsById(id)) {
+            throw new VenueNotFoundException(id);
+        }
+		Optional<Venue> venue = venueService.findById(id);
+        ArrayList<Event> next3Events = new ArrayList<>();
+        eventService.findAllByOrderByDateDescNameAsc().forEach(e -> {
+            if(e.getVenue() == venue.get() && next3Events.size() < 3)
+                next3Events.add(e);
+        });
+
+		return eventAssembler.toCollectionModel((Iterable<Event>)next3Events);
+	}
+    
+    @GetMapping("/{id}/events")
+	public CollectionModel<EntityModel<Event>> getVenueEvents(@PathVariable("id") long id) {
+        if(!venueService.existsById(id)) {
+            throw new VenueNotFoundException(id);
+        }
+		Optional<Venue> venue = venueService.findById(id);
+        ArrayList<Event> Events = new ArrayList<>();
+        eventService.findAllByOrderByDateDescNameAsc().forEach(e -> {
+            if(e.getVenue() == venue.get())
+                Events.add(e);
+        });
+
+		return eventAssembler.toCollectionModel((Iterable<Event>)Events);
 	}
 
     @GetMapping
     public CollectionModel<EntityModel<Venue>> getAllVenues() {
         return venueAssembler.toCollectionModel(venueService.findAll())
-                .add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withSelfRel());
+                .add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withRel("venues")).add(new Link("http://localhost:8080/api/profile/venues").withRel("profile"));
     }
 
 //    @RequestMapping(name = "/search", method = RequestMethod.GET)
@@ -74,9 +123,16 @@ public class VenuesControllerApi {
         }
 
         Venue newVenue = venueService.save(venue);
-        EntityModel<Venue> entity = venueAssembler.toModel(newVenue);
-
-        return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        EntityModel<Venue> entity = null;
+        if(venueAssembler.toModel(newVenue) != null) {
+        	entity = venueAssembler.toModel(newVenue);
+        }
+        
+        try {
+        	return ResponseEntity.created(entity.getRequiredLink(IanaLinkRelations.SELF).toUri()).build();
+        } catch (Exception e) {
+        	return ResponseEntity.unprocessableEntity().build();
+        }
     }
     
 	@RequestMapping(value="/{id}", method=RequestMethod.DELETE)
@@ -84,8 +140,6 @@ public class VenuesControllerApi {
 		if (!venueService.existsById(id)) {
 			throw new VenueNotFoundException(id);
 		}
-
-		venueService.findById(id).orElseThrow();
 		venueService.deleteById(id);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}

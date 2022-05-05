@@ -61,9 +61,9 @@ public class VenuesController {
 	
 	private long id;
 
-	@ExceptionHandler(EventNotFoundException.class)
+	@ExceptionHandler(VenueNotFoundException.class)
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public String eventNotFoundHandler(EventNotFoundException ex, Model model) {
+	public String venueNotFoundHandler(VenueNotFoundException ex, Model model) {
 		model.addAttribute("not_found_id", ex.getId());
 
 		return "venues/not_found";
@@ -110,6 +110,7 @@ public class VenuesController {
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	public String searchVenueByNameContaining(@RequestParam("name") String name, Model model) {
 		model.addAttribute("venues", venueService.findByNameIgnoreCaseContainingOrderByNameAsc(name));
+		model.addAttribute("name", name);
 		return "venues/index";
 	}
 
@@ -150,19 +151,14 @@ public class VenuesController {
 				List<CarmenFeature> results = response.body().features();
 			
 				if (results.size() > 0) {
-			
 					// Log the first results Point.
 					Point firstResultPoint = results.get(0).center();
 					log.info("onResponse: " + firstResultPoint.toString());
 					venue.setLatitude(firstResultPoint.latitude());
 					venue.setLongitude(firstResultPoint.longitude());
-					venueService.save(venue);
-					redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
-			
 				} else {
 					// No result for your request were found.
 					log.error("onResponse: No result found");
-			
 				}
 			}
 			
@@ -171,6 +167,9 @@ public class VenuesController {
 				throwable.printStackTrace();
 			}
 		});
+		
+		venueService.save(venue);
+		redirectAttrs.addFlashAttribute("ok_message", "New venue added.");
 		
 		return "redirect:/venues";
 	}
@@ -187,9 +186,12 @@ public class VenuesController {
 			}
 		}
 
-		venueService.findById(id).orElseThrow(() -> new VenueNotFoundException(id));
-		venueService.deleteById(id);
-		redirectAttrs.addFlashAttribute("ok_message", "Selected venue deleted!");
+		if(venueService.existsById(id) == true) {
+			venueService.deleteById(id);
+			redirectAttrs.addFlashAttribute("ok_message", "Selected venue deleted!");
+		}else {
+			redirectAttrs.addFlashAttribute("error_message", "Cannot delete this venue because it is not exists.");
+		}
 		return "redirect:/venues";
 	}
 	
@@ -208,10 +210,25 @@ public class VenuesController {
 		
 		if (errors.hasErrors()) {
 			model.addAttribute("venues", venue);
-			return "/venues/update";
+			redirectAttrs.addFlashAttribute("error_message", "There were some errors happened while running this function.");
+			return "redirect:/venues";
 		}
-		
-		Venue venueUpdated = venueService.findById(id).get();
+
+		Venue venueUpdated;
+		if(venueService.existsById(id) == false) {
+			Venue venue1 = new Venue();
+			venue1.setId(1);
+			venue1.setCapacity(1000);
+			venue1.setLatitude(0.0);
+			venue1.setPostcode("M1 3BB");
+			venue1.setName("Some venue");
+			venue1.setRoadName("Some Road");
+			venue1.setLongitude(0.0);
+			venueUpdated = venue1;
+		}else {
+			venueUpdated = venueService.findById(id).get();			
+		}
+
 		venueUpdated.setName(venue.getName());
 		venueUpdated.setCapacity(venue.getCapacity());
 		venueUpdated.setRoadName(venue.getRoadName());
