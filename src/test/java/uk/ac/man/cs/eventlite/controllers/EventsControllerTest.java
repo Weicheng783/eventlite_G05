@@ -284,12 +284,6 @@ public class EventsControllerTest {
 		    EventsController eventcontrol = new EventsController();
 //		    eventcontrol.createEvent(event, null, null, null)
 		}
-		
-		@Test
-		public void setTweet() throws Exception {
-			Event event = new Event();
-			event.setTweet("tweets!");
-		}
 	
 		@Test
 		public void getEvent() throws Exception {

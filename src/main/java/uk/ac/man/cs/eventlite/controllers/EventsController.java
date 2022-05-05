@@ -174,15 +174,14 @@ public class EventsController {
 			eventUpdated = event1;
 		}else {
 			eventUpdated = eventService.findEventById(id).get();
+			eventUpdated.setName(event.getName());
+			eventUpdated.setDate(event.getDate());
+			eventUpdated.setTime(event.getTime());
+			eventUpdated.setVenue(event.getVenue());
+
+			eventService.save(eventUpdated);
+			redirectAttrs.addFlashAttribute("ok_message", "The event has been updated.");
 		}
-
-		eventUpdated.setName(event.getName());
-		eventUpdated.setDate(event.getDate());
-		eventUpdated.setTime(event.getTime());
-		eventUpdated.setVenue(event.getVenue());
-
-		eventService.save(eventUpdated);
-		redirectAttrs.addFlashAttribute("ok_message", "The event has been updated.");
 		
 		return "redirect:/events";
 	}
