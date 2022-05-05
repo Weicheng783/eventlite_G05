@@ -92,6 +92,25 @@ public class EventsController {
 		model.addAttribute("event", event.get());
 		return "events/event_details";
 	}
+	
+	public void getTweets(Model model) {
+		Twitter twitter = getTwitterObject();
+		ResponseList<Status> tweetList;
+		List<Status> tweetReadyList;
+
+		try {
+			tweetList = twitter.getUserTimeline();
+			if(tweetList.size() <= 5) {
+				tweetReadyList = tweetList.subList(0, tweetList.size());
+			}else {
+				tweetReadyList = tweetList.subList(0, 5);
+			}
+			model.addAttribute("tweets", tweetReadyList);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+	}
+	
 
 	@GetMapping
 	public String getAllEvents(Model model) {
@@ -125,21 +144,7 @@ public class EventsController {
 		// model.addAttribute("events", eventService.findAll());
 		
 		// Twitter Getting Latest Five Status
-		Twitter twitter = getTwitterObject();
-		ResponseList<Status> tweetList;
-		List<Status> tweetReadyList;
-
-		try {
-			tweetList = twitter.getUserTimeline();
-			if(tweetList.size() <= 5) {
-				tweetReadyList = tweetList.subList(0, tweetList.size());
-			}else {
-				tweetReadyList = tweetList.subList(0, 5);
-			}
-			model.addAttribute("tweets", tweetReadyList);
-		} catch (TwitterException e) {
-			e.printStackTrace();
-		}
+		getTweets(model);
 
 		return "events/index";
 	}
