@@ -101,7 +101,7 @@ public class VenuesControllerApi {
     @GetMapping
     public CollectionModel<EntityModel<Venue>> getAllVenues() {
         return venueAssembler.toCollectionModel(venueService.findAll())
-                .add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withRel("venues")).add(new Link("http://localhost:8080/api/profile/venues").withRel("profile"));
+                .add(linkTo(methodOn(VenuesControllerApi.class).getAllVenues()).withRel("self")).add(new Link("http://localhost:8080/api/profile/venues").withRel("profile"));
     }
 
 //    @RequestMapping(name = "/search", method = RequestMethod.GET)
