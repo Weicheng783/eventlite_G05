@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import org.thymeleaf.util.ArrayUtils;
 
+import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -86,22 +87,21 @@ public class EventsController {
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		Twitter twitter = tf.getInstance();
 		
-		ArrayList<Status> tweetList = new ArrayList<Status>();
+		ResponseList<Status> tweetList;
+		Map<String, String> timeline = new LinkedHashMap<String, String>();
 		
 		try {
-			List<Status> statuses = twitter.getUserTimeline();
-			for (int i=0; i < 5; i++) {
-				tweetList.add(statuses.get(i));
-				
-				model.addAttribute("tweets", tweetList);
+			tweetList = twitter.getUserTimeline(5);
+			for (Status tweet : tweetList) {
+				timeline.put(tweet.getCreatedAt().toString(), tweet.getText());
 			}
-			
 		} catch (TwitterException e) {
 			// TODO Auto-generated catch block
+			timeline = null;
 			e.printStackTrace();
 		}
 		
-		
+		model.addAttribute("tweets", timeline);
 		
 		return "events/index";
 	}
