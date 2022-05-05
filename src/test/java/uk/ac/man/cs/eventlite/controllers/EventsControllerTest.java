@@ -261,21 +261,17 @@ public class EventsControllerTest {
 		}
 		
 		@Test
-		public void updateEvent() throws Exception {
-			ArgumentCaptor<Event> arg = ArgumentCaptor.forClass(Event.class);
+		public void updateEventNotSuccessful() throws Exception {
 
-		    MvcResult re = mvc.perform(put("/events/update/1").with(user("Rob").roles(Security.ADMIN_ROLE))
+		    mvc.perform(put("/events/update/1").with(user("Rob").roles(Security.ADMIN_ROLE))
 					.contentType(MediaType.APPLICATION_FORM_URLENCODED)
 					.param("name", "BABEvent")
 					.param("date", LocalDateTime.now().plusDays(1).toLocalDate().toString())
 					.param("time", LocalTime.MIDNIGHT.toString())
 					.accept(MediaType.TEXT_HTML).with(csrf())).andExpect(status().isFound())
 					.andExpect(view().name("redirect:/events")).andExpect(model().hasNoErrors())
-					.andExpect(handler().methodName("updateEvent")).andExpect(flash().attributeExists("ok_message")).andReturn();
+					.andExpect(handler().methodName("updateEvent")).andExpect(flash().attributeExists("error_message")).andReturn();
 
-		   verify(eventService).save(arg.capture());
-		   List<Event> capturedParams = arg.getAllValues();
-		   assertThat("BABEvent", equalTo(capturedParams.get(0).getName()));
 		}
 		
 		@Test
