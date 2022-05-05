@@ -12,17 +12,10 @@
 
   <form action="/events/search" method="get">
     <div class="input-group pb-4">
-<<<<<<< HEAD
-      <div class="form-outline">
-        <input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control" placeholder="Search event by name..."/>
-      </div>
-      <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i></button>
-=======
         <input type="search" id="name" name="name" th:value="${name}" size="50%" class="form-control"
                placeholder="Search event by name..."/>
         <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i> Search</button>
 	    <button type="button" class="btn btn-secondary" onclick="clearSearch()"><i class="fa fa-ban" aria-hidden="true"></i> Clear</button>
->>>>>>> refs/remotes/origin/main
     </div>
   </form>
 
@@ -78,11 +71,8 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="e : ${tweets}">
-      <td>
-        <a th:text="${@key}"></a>
-      </td>
-      <td><a th:href="@{.}" th:text="${.}"></a></td>
+    <tr th:each="t : ${tweets}">
+      <td th:text="${t.text}"></td>
     </tr>
 
     </tbody>

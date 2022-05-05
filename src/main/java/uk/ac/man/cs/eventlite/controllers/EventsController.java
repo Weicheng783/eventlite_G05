@@ -26,6 +26,7 @@ import uk.ac.man.cs.eventlite.entities.Venue;
 import uk.ac.man.cs.eventlite.exceptions.EventNotFoundException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.time.*;
 
 @Controller
@@ -40,9 +41,8 @@ public class EventsController {
 	@Autowired
 	private VenueService venueService;
 	
-	@RequestMapping(value="/tweet" ,method=RequestMethod.GET)
-	public String createTweet(@RequestParam("eventId") String eventId, @RequestParam("tweet") String tweet, 
-			Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+	public Twitter getTwitterObject() {
+		
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
@@ -52,6 +52,23 @@ public class EventsController {
 
 		TwitterFactory tf = new TwitterFactory(cb.build());
 	    Twitter twitter = tf.getInstance();
+		
+		return twitter;
+	}
+	
+	@RequestMapping(value="/tweet" ,method=RequestMethod.GET)
+	public String createTweet(@RequestParam("eventId") String eventId, @RequestParam("tweet") String tweet, 
+			Model model, RedirectAttributes redirectAttrs) throws TwitterException {
+//		ConfigurationBuilder cb = new ConfigurationBuilder();
+//		cb.setDebugEnabled(true)
+//		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
+//	    .setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
+//	    .setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
+//	    .setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
+//
+//		TwitterFactory tf = new TwitterFactory(cb.build());
+//	    Twitter twitter = tf.getInstance();
+		Twitter twitter = getTwitterObject();
 	    try {
 	    	Status status = twitter.updateStatus(tweet);
 	    	redirectAttrs.addFlashAttribute("ok_message_Tweets", status.getText());
@@ -71,32 +88,44 @@ public class EventsController {
 		return "events/not_found";
 	}
 
+//	@RequestMapping(value="/tweets" ,method=RequestMethod.GET)
 	public String getTweets(Model model) {
 		
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-		cb.setDebugEnabled(true)
-		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
-		.setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
-		.setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
-		.setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
-		TwitterFactory tf = new TwitterFactory(cb.build());
-		Twitter twitter = tf.getInstance();
+//		ConfigurationBuilder cb = new ConfigurationBuilder();
+//		cb.setDebugEnabled(true)
+//		.setOAuthConsumerKey("MZwVGhCjZzciv46GsewbE5yJm")
+//		.setOAuthConsumerSecret("kr6MPcfKWiZPFVo6PL0mEYlmoAKrchqrSBYbcD8zSgjBlQH9p3")
+//		.setOAuthAccessToken("1509559619764559877-RgzbMmtMjB8i9MvWf8MIQIySYZYzVd")
+//		.setOAuthAccessTokenSecret("bLYIBlueNoRjV00XaWaCiqrqOvmJsu8hZOA24K7luI0V3");
+//		TwitterFactory tf = new TwitterFactory(cb.build());
+//		Twitter twitter = tf.getInstance();
+		Twitter twitter = getTwitterObject();
 		
 		ResponseList<Status> tweetList;
-		Map<String, String> timeline = new LinkedHashMap<String, String>();
+//		List<String> tweetList;
+//		Map<String, String> timeline = new LinkedHashMap<String, String>();
+		ArrayList<String> timeline = new ArrayList<String>();
+
 		
 		try {
-			tweetList = twitter.getUserTimeline(5);
-			for (Status tweet : tweetList) {
-				timeline.put(tweet.getCreatedAt().toString(), tweet.getText());
-			}
+//			Paging p = new Paging(5);
+			tweetList = twitter.getUserTimeline();
+//			tweetList = twitter.getHomeTimeline().stream().map(item -> item.getText()).collect(Collectors.toList());
+//			for (Status tweet : tweetList) {
+//				timeline.put(tweet.getCreatedAt().toString(), tweet.getText());
+//				timeline.add(tweet.getText());
+//				System.out.println("Testsdfsdfsdfsdfasdf");
+//				System.out.println(tweet.getText());
+//				
+//			}
+			model.addAttribute("tweets", tweetList);
 		} catch (TwitterException e) {
 			// TODO Auto-generated catch block
-			timeline = null;
+//			timeline = null;
 			e.printStackTrace();
 		}
 		
-		model.addAttribute("tweets", timeline);
+//		model.addAttribute("tweets", tweetList);
 		
 		return "events/index";
 	}
