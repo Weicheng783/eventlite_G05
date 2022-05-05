@@ -147,41 +147,41 @@ public class VenuesControllerTest {
 		verify(venueService, never()).deleteById(1);
 	}
 	
-//	@Test
-//	public void deleteVenueContainsAtLeastOneEvent() throws Exception {
-//		// Create a venue
-//		ArgumentCaptor<Venue> arg = ArgumentCaptor.forClass(Venue.class);
-//		when(venueService.save(any(Venue.class))).then(returnsFirstArg());
-//
-//		mvc.perform(post("/venues").with(user("Rob").roles(Security.ADMIN_ROLE))
-//				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
-//				.param("name", "AAAVenue")
-//				.param("latitude", "0.0")
-//				.param("longitude", "0.0")
-//				.param("roadName", "100 Sackville Street")
-//				.param("postcode", "M1 3BB")
-//				.param("capacity", "1000")
-//				.accept(MediaType.TEXT_HTML).with(csrf())).andExpect(status().isFound())
-//				.andExpect(view().name("redirect:/venues")).andExpect(model().hasNoErrors())
-//				.andExpect(handler().methodName("createVenue")).andExpect(flash().attributeExists("ok_message"));
-//
-//	   verify(venueService).save(arg.capture());
-//	   List<Venue> capturedParams = arg.getAllValues();
-//	   assertThat("100 Sackville Street", equalTo(capturedParams.get(0).getRoadName()));
-//	   assertThat("AAAVenue", equalTo(capturedParams.get(capturedParams.size()-1).getName()));
-//
-//		// Create one mock event which linked to the mock venue created above
-//		Event event = new Event();
-//		event.setDate(LocalDateTime.now().plusDays(1).toLocalDate());
-//		event.setDescription("some description...");
-//		event.setId(10);
-//		event.setName("Aevent");
-//		event.setTime(LocalTime.MIDNIGHT);
-//		event.setVenue(venue);
-//		eventService.save(event);
-//
-//		verify(venueService, never()).deleteById(10);
-//	}
+	@Test
+	public void deleteVenueContainsAtLeastOneEvent() throws Exception {
+		// Create a venue
+		ArgumentCaptor<Venue> arg = ArgumentCaptor.forClass(Venue.class);
+		when(venueService.save(any(Venue.class))).then(returnsFirstArg());
+
+		mvc.perform(post("/venues").with(user("Rob").roles(Security.ADMIN_ROLE))
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("name", "AAAVenue")
+				.param("latitude", "0.0")
+				.param("longitude", "0.0")
+				.param("roadName", "100 Sackville Street")
+				.param("postcode", "M1 3BB")
+				.param("capacity", "1000")
+				.accept(MediaType.TEXT_HTML).with(csrf())).andExpect(status().isFound())
+				.andExpect(view().name("redirect:/venues")).andExpect(model().hasNoErrors())
+				.andExpect(handler().methodName("createVenue")).andExpect(flash().attributeExists("ok_message"));
+
+	   verify(venueService).save(arg.capture());
+	   List<Venue> capturedParams = arg.getAllValues();
+	   assertThat("100 Sackville Street", equalTo(capturedParams.get(0).getRoadName()));
+	   assertThat("AAAVenue", equalTo(capturedParams.get(capturedParams.size()-1).getName()));
+
+		// Create one mock event which linked to the mock venue created above
+		Event event = new Event();
+		event.setDate(LocalDateTime.now().plusDays(1).toLocalDate());
+		event.setDescription("some description...");
+		event.setId(10);
+		event.setName("Aevent");
+		event.setTime(LocalTime.MIDNIGHT);
+		event.setVenue(venue);
+		eventService.save(event);
+
+		verify(venueService, never()).deleteById(10);
+	}
 	
 	@Test
 	public void createVenueBadRole() throws Exception {
@@ -316,5 +316,6 @@ public class VenuesControllerTest {
 		   assertThat("190 Sackville Street", equalTo(capturedParams.get(0).getRoadName()));
 		   assertThat("BABVenue", equalTo(capturedParams.get(capturedParams.size()-1).getName()));
 		}
+
 
 }
