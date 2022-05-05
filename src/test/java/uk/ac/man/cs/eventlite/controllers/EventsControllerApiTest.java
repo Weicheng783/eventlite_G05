@@ -75,6 +75,7 @@ public class EventsControllerApiTest {
 		mvc.perform(get("/api/events/new").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotAcceptable())
 		.andExpect(handler().methodName("newEvent"));
 	}
+
 	
 	@Test
 	public void createEventNotAccept() throws Exception {
@@ -107,6 +108,14 @@ public class EventsControllerApiTest {
 		when(eventService.existsById(99)).thenReturn(true);
 		mvc.perform(get("/api/events/99/venue").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(handler().methodName("getEventVenue"));
+	}
+	
+	@Test
+	public void getVenueNoEvent() throws Exception{
+		when(eventService.existsById(99)).thenReturn(false);
+		mvc.perform(get("/api/events/99/venue").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
+		.andExpect(jsonPath("$.error", containsString("event 99"))).andExpect(jsonPath("$.id", equalTo(99)))
+		.andExpect(handler().methodName("getEventVenue"));
 	}
 	
 	@Test
