@@ -26,6 +26,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.print.attribute.standard.Media;
+
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.hamcrest.Matchers.endsWith;
@@ -258,6 +260,14 @@ public class EventsControllerTest {
 					.andExpect(handler().methodName("deleteEvent"));
 
 			verify(eventService, never()).deleteById(1);
+		}
+
+		@Test
+		public void searchEventByNameContaining() throws Exception {
+			mvc.perform(get("/events/search?name=Test%20Event").accept(MediaType.TEXT_HTML)).andExpect(status().isOk()).andExpect(view().name("events/index"))
+					.andExpect(handler().methodName("searchEventByNameContaining"))
+					.andExpect(model().attributeExists("eventFuture"))
+					.andExpect(model().attributeExists("eventPast"));
 		}
 		
 		@Test
