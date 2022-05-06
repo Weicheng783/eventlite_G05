@@ -29,11 +29,16 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 
 	@LocalServerPort
 	private int port;
+	
+	private int currentRows;
 
+	private String validEvent = "{ \"name\": \"Test Event 4\", \"date\": \"2200-12-31\", \"time\": \"12:00:00\", \"venue\": {\"id\":\"1\"} }";
+	
 	private WebTestClient client;
 
 	@BeforeEach
 	public void setup() {
+		currentRows = countRowsInTable("events");
 		client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
 	}
 
@@ -45,10 +50,26 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 	}
 
 	@Test
+	public void getEventFound() {
+		client.get().uri("/events/3").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+		.contentType(MediaType.APPLICATION_JSON).expectBody()
+		.jsonPath("$.name").isEqualTo("Test Event 1")
+		.jsonPath("$._links.self.href").value(endsWith("/api/events/3"));
+	}
+	
+	@Test
 	public void getEventNotFound() {
 		client.get().uri("/events/99").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNotFound()
 				.expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody().jsonPath("$.error")
 				.value(containsString("event 99")).jsonPath("$.id").isEqualTo(99);
+	}
+	
+	@Test
+	public void getEventVenue() {
+		client.get().uri("/events/3/venue").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+		.contentType(MediaType.APPLICATION_JSON).expectBody()
+		.jsonPath("$.name").isEqualTo("Kilburn Building")
+		.jsonPath("$._links.self.href").value(endsWith("/api/venues/1"));
 	}
 	
 	@Test
@@ -82,6 +103,53 @@ public class EventsControllerApiIntegrationTest extends AbstractTransactionalJUn
 
 		// Check nothing is removed from the database.
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void postEventBadUser() {
+		// Attempt to POST a valid event.
+		client.mutate().filter(basicAuthentication("Bad", "Person")).build().post().uri("/events")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(validEvent).exchange().expectStatus().isUnauthorized();
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void postEventNoData() {
+		// Attempt to POST a empty venue.
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().post().uri("/events")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isBadRequest();
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	public void postEventBadData() {
+		// Attempt to POST a invalid name for event.
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().post().uri("/events")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.bodyValue("{ \"name\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"date\": \"2200-12-31\", \"time\": \"12:00:00\", \"venue\": {\"id\":\"1\"} }")
+				.exchange().expectStatus().isEqualTo(422);
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+	
+	@Test
+	@DirtiesContext
+	public void postEventWithUser() {
+		// Attempt to POST a valid greeting.
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().post().uri("/events")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(validEvent).exchange().expectStatus().isCreated().expectHeader()
+				.value("Location", containsString("/api/events")).expectBody().isEmpty();
+
+		// Check one row is added to the database.
+		assertThat(currentRows + 1, equalTo(countRowsInTable("events")));
 	}
 
 }
