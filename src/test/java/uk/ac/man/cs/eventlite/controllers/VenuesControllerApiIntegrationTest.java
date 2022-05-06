@@ -29,11 +29,16 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
 
 	@LocalServerPort
 	private int port;
+	
+	private int currentRows;
+	
+	private String validVenue = "{ \"name\": \"House\", \"roadName\": \"20 Cawdor Rd\", \"postcode\": \"M14 6LQ\", \"capacity\": 70 }";
 
 	private WebTestClient client;
 
 	@BeforeEach
 	public void setup() {
+		currentRows = countRowsInTable("venue");
 		client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port + "/api").build();
 	}
 
@@ -61,4 +66,62 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
 			.jsonPath("$.capacity").isEqualTo("1000")
 			.jsonPath("$._links.self.href").value(endsWith("/api/venues/1"));
 	}
+	
+	@Test
+	public void postVenueNoUser() {
+		// Attempt to POST a valid venue.
+		client.post().uri("/venues").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(validVenue).exchange().expectStatus().isUnauthorized();
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("venue")));
+	}
+	
+	@Test
+	public void postVenueBadUser() {
+		// Attempt to POST a valid venue.
+		client.mutate().filter(basicAuthentication("Bad", "Person")).build().post().uri("/venues")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(validVenue).exchange().expectStatus().isUnauthorized();
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("venue")));
+	}
+	
+	@Test
+	public void postVenueNoData() {
+		// Attempt to POST a empty venue.
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().post().uri("/venues")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.exchange().expectStatus().isBadRequest();
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("venue")));
+	}
+	
+	@Test
+	public void postVenueBadData() {
+		// Attempt to POST a empty venue.
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().post().uri("/venues")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.bodyValue("{ \"name\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"roadName\": \"20 Cawdor Rd\", \"postcode\": \"M14 6LQ\", \"capacity\": 70 }")
+				.exchange().expectStatus().isEqualTo(422);
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("venue")));
+	}
+	
+	@Test
+	@DirtiesContext
+	public void postVenueWithUser() {
+		// Attempt to POST a valid greeting.
+		client.mutate().filter(basicAuthentication("Rob", "Haines")).build().post().uri("/venues")
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)
+				.bodyValue(validVenue).exchange().expectStatus().isCreated().expectHeader()
+				.value("Location", containsString("/api/venues")).expectBody().isEmpty();
+
+		// Check one row is added to the database.
+		assertThat(currentRows + 1, equalTo(countRowsInTable("venue")));
+	}
+	 
 }

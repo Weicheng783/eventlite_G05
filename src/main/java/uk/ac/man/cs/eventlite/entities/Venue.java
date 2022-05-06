@@ -36,7 +36,7 @@ public class Venue {
 	private String roadName;
 
 	@NotEmpty(message = "Venue must have a postcode")
-	@Size(max=7, message = "Post code too long")
+	@Size(max=8, message = "Post code too long")
 	@Pattern(regexp="([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\\s?[0-9][A-Za-z]{2})",
 				message = "Must be a valid UK postcode")
 	private String postcode;
