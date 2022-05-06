@@ -99,7 +99,17 @@ public class EventsControllerTest {
 
 	@MockBean
 	private VenueService venueService;
+	
+	@Test
+	public void tweetTest() throws Exception{
+		String tweetSent = new String(LocalDate.now().toString() + "//" + LocalTime.now().toString());
+		when(eventService.existsById(1)).thenReturn(false);
+		mvc.perform(get("/events/tweet").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML).param("eventId", "1").param("tweet", tweetSent)
+				.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/events/1"))
+				.andExpect(handler().methodName("createTweet")).andExpect(flash().attributeExists("ok_message_Tweets"));
 
+	}
+	
 	@Test
 	public void getEventNotFound() throws Exception {
 		mvc.perform(get("/events/99").accept(MediaType.TEXT_HTML)).andExpect(status().isNotFound())
