@@ -316,6 +316,16 @@ public class VenuesControllerTest {
 		   assertThat("190 Sackville Street", equalTo(capturedParams.get(0).getRoadName()));
 		   assertThat("BABVenue", equalTo(capturedParams.get(capturedParams.size()-1).getName()));
 		}
+		
+		@Test
+		public void getVenueToUpdateTest() throws Exception{
+
+			when(venueService.findById(1)).thenReturn(Optional.of(venue));
+			
+			mvc.perform(get("/venues/update/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML))
+					.andExpect(status().isOk())
+					.andExpect(view().name("/venues/update")).andExpect(handler().methodName("getVenueToUpdate"));
+		}
 
 
 }
