@@ -36,6 +36,8 @@ public class TestDataLoader {
 			// every time.
 			Venue venue = new Venue();
 			venue.setName("Kilburn Building");
+			venue.setRoadName("Kilburn Building University of Manchester, Oxford Rd");
+			venue.setPostcode("M13 9PL");
 			venue.setCapacity(1000);
 			venueService.save(venue);
 
