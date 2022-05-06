@@ -51,5 +51,14 @@ public class VenuesControllerApiIntegrationTest extends AbstractTransactionalJUn
 				.value(containsString("venue 99")).jsonPath("$.id").isEqualTo(99);
 	}
 	
-
+	@Test
+	public void getVenueFound() {
+		client.get().uri("/venues/1").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk().expectHeader()
+			.contentType(MediaType.APPLICATION_JSON).expectBody()
+			.jsonPath("$.name").isEqualTo("Kilburn Building")
+			.jsonPath("$.roadName").isEqualTo("Kilburn Building University of Manchester, Oxford Rd")
+			.jsonPath("$.postcode").isEqualTo("M13 9PL")
+			.jsonPath("$.capacity").isEqualTo("1000")
+			.jsonPath("$._links.self.href").value(endsWith("/api/venues/1"));
+	}
 }
