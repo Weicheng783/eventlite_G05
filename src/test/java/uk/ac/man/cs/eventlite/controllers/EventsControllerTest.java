@@ -250,6 +250,19 @@ public class EventsControllerTest {
 
 			verify(eventService).deleteAll();
 		}
+		
+		@Test
+		public void deleteEventFound() throws Exception {
+			Optional<Event> testEvent = Optional.of(event);
+			Long id = (long)1;
+			
+			when(eventService.findById(id)).thenReturn(testEvent);
+			
+			mvc.perform(delete("/events/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML).with(csrf())).andExpect(status().isFound())
+			.andExpect(view().name("redirect:/events")).andExpect(handler().methodName("deleteEvent")).andExpect(flash().attributeExists("ok_message"));
+			
+		}
+
 
 		@Test
 		public void deleteEventNotFound() throws Exception {
