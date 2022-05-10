@@ -26,6 +26,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.print.attribute.standard.Media;
+
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.hamcrest.Matchers.endsWith;
@@ -327,5 +329,46 @@ public class VenuesControllerTest {
 					.andExpect(view().name("/venues/update")).andExpect(handler().methodName("getVenueToUpdate"));
 		}
 
+		@Test
+		public void newVenueTest() throws Exception {
+			mvc.perform(get("/venues/new").with(user("Markel").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML))
+					.andExpect(status().isOk())
+					.andExpect(view().name("venues/new"))
+					.andExpect(handler().methodName("newVenue"));
+		}
 
+		@Test
+		public void searchVenueByNameContaining() throws Exception {
+			mvc.perform(get("/venues/search?name=Kilburn%20Building").accept(MediaType.TEXT_HTML)).andExpect(status().isOk()).andExpect(view().name("venues/index"))
+					.andExpect(handler().methodName("searchVenueByNameContaining"))
+					.andExpect(model().attributeExists("venues"))
+					.andExpect(model().attributeExists("name"));
+		}
+
+		@Test
+		public void deleteVenueWithEvent() throws Exception {
+			// when(venueService.existsById(1)).thenReturn(true);
+
+			Venue venue = new Venue();
+			venue.setId(1);
+			venue.setName("Random building");
+			venue.setRoadName("Oxford Road");
+			venue.setPostcode("M13 9WJ");
+			venue.setCapacity(1000);
+			venueService.save(venue);
+			// when(eventService.findById(1).get().getVenue()).thenReturn(venueService.findById(1).get());
+			Event event = new Event();
+			event.setName("Delete event");
+			event.setTime(LocalTime.now());
+			event.setDate(LocalDate.now().plusDays(1));
+			event.setDescription("bla bla");
+			event.setVenue(venue);
+			eventService.save(event);
+
+			mvc.perform(delete("/venues/1").with(user("Rob").roles(Security.ADMIN_ROLE)).accept(MediaType.TEXT_HTML)
+					.with(csrf())).andExpect(status().isFound()).andExpect(view().name("redirect:/venues"))
+					.andExpect(handler().methodName("deleteVenue"));
+
+			verify(venueService, never()).deleteById(1);
+		}
 }
