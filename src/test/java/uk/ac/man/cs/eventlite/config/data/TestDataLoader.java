@@ -40,6 +40,13 @@ public class TestDataLoader {
 			venue.setPostcode("M13 9PL");
 			venue.setCapacity(1000);
 			venueService.save(venue);
+			
+			Venue venue1 = new Venue();
+			venue1.setName("Engineering Building");
+			venue1.setRoadName("Engineering Bilding, Booth Street East");
+			venue1.setPostcode("M13 9PL");
+			venue1.setCapacity(1000);
+			venueService.save(venue1);
 
 			Event event1 = new Event();
 			event1.setName("Test Event 1");
@@ -61,6 +68,26 @@ public class TestDataLoader {
 			event3.setTime(LocalTime.now());
 			event3.setVenue(venue);
 			eventService.save(event3);
+			
+			Event event4 = new Event();
+			event4.setName("Test Event 4");
+			event4.setDate(LocalDate.now().plusDays(100));
+			event4.setTime(LocalTime.now());
+			event4.setVenue(venue1);
+			eventService.save(event4);
+
+			Event event5 = new Event();
+			event5.setName("Test Event 5");
+			event5.setTime(LocalTime.now());
+			event5.setVenue(venue1);
+			eventService.save(event5);
+
+			Event event6 = new Event();
+			event6.setName("Test Event 6");
+			event6.setDate(LocalDate.now().plusDays(100));
+			event6.setTime(LocalTime.now());
+			event6.setVenue(venue1);
+			eventService.save(event6);
 		};
 	}
 }
