@@ -54,6 +54,83 @@ public class VenuesControllerIntegrationTest extends AbstractTransactionalJUnit4
 		client.get().uri("/venues").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk();
 	}
 
+	
+	@Test
+	public void testGetVenue() {
+		client.get().uri("/venues/1").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk();
+		}
+	
+	@Test
+	public void testGetVenueNotFound() {
+		client.get().uri("/venues/99").accept(MediaType.TEXT_HTML).exchange().expectStatus().isNotFound().expectHeader()
+				.contentTypeCompatibleWith(MediaType.TEXT_HTML).expectBody(String.class).consumeWith(result -> {
+					assertThat(result.getResponseBody(), containsString("99"));
+				});
+	}
+	
+	@Test
+	public void postVenueNoUser() {
+		int currentRows = countRowsInTable("venue");
+		// We don't set the session ID, so have no credentials.
+		// This should redirect to the sign-in page.
+		client.post().uri("/venues").accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.bodyValue("New venue").exchange().expectStatus().isFound().expectHeader()
+				.value("Location", endsWith("/sign-in"));
+
+		// Check nothing added to the database.
+		assertThat(currentRows, equalTo(countRowsInTable("venue")));
+	}
+	
+	@Test public void postVenueWithUser() {
+		int currentRows = countRowsInTable("venue");
+		String[] tokens = login();
+
+		// Attempt to POST a valid greeting.
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+		form.add("_csrf", tokens[0]);
+		form.add("template", "Howdy, %s!");
+
+		// The session ID cookie holds our login credentials.
+		client.post().uri("/venues").accept(MediaType.TEXT_HTML).contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.bodyValue(form).cookies(cookies -> {
+					cookies.add(SESSION_KEY, tokens[1]);
+				}).exchange().expectStatus().isOk().expectHeader().value("Location", endsWith("/venues"));
+
+		// Check one row is added to the database.
+		assertThat(currentRows + 1, equalTo(countRowsInTable("venue")));
+		
+		}
+
+
+private String[] login() {
+	String[] tokens = new String[2];
+
+	// Although this doesn't POST the log in form it effectively logs us in.
+	// If we provide the correct credentials here, we get a session ID back which
+	// keeps us logged in.
+	EntityExchangeResult<String> result = client.mutate().filter(basicAuthentication("Rob", "Haines")).build().get()
+			.uri("/").accept(MediaType.TEXT_HTML).exchange().expectBody(String.class).returnResult();
+	tokens[0] = getCsrfToken(result.getResponseBody());
+	tokens[1] = result.getResponseCookies().getFirst(SESSION_KEY).getValue();
+
+	return tokens;
+}
+
+
+private String getCsrfToken(String body) {
+	Matcher matcher = CSRF.matcher(body);
+
+	// matcher.matches() must be called; might as well assert something as well...
+	assertThat(matcher.matches(), equalTo(true));
+
+	return matcher.group(1);
+}
+
+
+
+
+
+	
 
 
 }
