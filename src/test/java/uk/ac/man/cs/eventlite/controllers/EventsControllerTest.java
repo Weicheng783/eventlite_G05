@@ -203,16 +203,16 @@ public class EventsControllerTest {
 
 				verify(eventService, never()).save(event);
 			}
-		// Tests posting an event with no venue
+		// Tests posting an event with past date
 		@Test
-		public void postNoEventVenue() throws Exception {
+		public void postEventPastDate() throws Exception {
 			mvc.perform(MockMvcRequestBuilders.post("/events").contentType(MediaType.APPLICATION_FORM_URLENCODED)
 					.with(user("Markel").roles(Security.ADMIN_ROLE))
 					.param("name", "Event")
 					.param("id", "10")
-					.param("date", LocalDate.now().toString())
+					.param("date", LocalDate.now().minusDays(3).toString())
 					.param("time", LocalTime.now().toString())
-					.param("Venue_id", "")
+					.param("Venue_id", "10")
 					.param("description", "This event is...")
 					.accept(MediaType.TEXT_HTML).with(csrf())).andExpect(status().isOk())
 					.andExpect(model().attributeHasFieldErrors("event", "date"));
@@ -220,6 +220,24 @@ public class EventsControllerTest {
 
 			verify(eventService, never()).save(event);
 		}
+		
+		// Tests posting an event with no venue
+				@Test
+				public void postNoEventVenue() throws Exception {
+					mvc.perform(MockMvcRequestBuilders.post("/events").contentType(MediaType.APPLICATION_FORM_URLENCODED)
+							.with(user("Markel").roles(Security.ADMIN_ROLE))
+							.param("name", "Event")
+							.param("id", "10")
+							.param("date", LocalDate.now().toString())
+							.param("time", LocalTime.now().toString())
+							.param("Venue_id", "")
+							.param("description", "This event is...")
+							.accept(MediaType.TEXT_HTML).with(csrf())).andExpect(status().isOk())
+							.andExpect(model().attributeHasFieldErrors("event", "date"));
+
+
+					verify(eventService, never()).save(event);
+				}
 	// Tests posting an event with a description longer than 500 characters
 		@Test
 		public void postLongEventDescription() throws Exception {
