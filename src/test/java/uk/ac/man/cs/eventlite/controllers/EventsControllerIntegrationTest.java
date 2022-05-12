@@ -48,6 +48,11 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 	}
 
 	@Test
+	public void testGetNext3EventsAndTop3Venues() {
+		client.get().uri("/").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk();
+	}
+	
+	@Test
 	public void testGetAllEvents() {
 		client.get().uri("/events").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk();
 	}
