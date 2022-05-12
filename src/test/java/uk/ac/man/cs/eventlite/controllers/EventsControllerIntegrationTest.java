@@ -83,6 +83,19 @@ public class EventsControllerIntegrationTest extends AbstractTransactionalJUnit4
 		// Check that nothing is removed from the database.
 		assertThat(currentRows, equalTo(countRowsInTable("events")));
 	}
+	
+	@Test
+	public void postEventNoUser(){
+		int currentRows = countRowsInTable("events");
+		// Should redirect to the sign-in page.
+		client.post().uri("/events").accept(MediaType.TEXT_HTML).exchange().expectStatus().isFound().expectHeader()
+				.value("Location", endsWith("/sign-in"));
+
+		// Check that nothing is removed from the database.
+		assertThat(currentRows, equalTo(countRowsInTable("events")));
+	}
+
+	
 
 
 }
